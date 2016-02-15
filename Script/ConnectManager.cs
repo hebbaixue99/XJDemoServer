@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
- 
+using System.Net.Sockets;
 
 public class ConnectManager
 {
@@ -15,6 +15,14 @@ public class ConnectManager
     {
         return this.factory.beginConnect(address, port, handlel, invalidHandle);
     }
+	public Connect beginConnect(Socket _socket)
+	{
+		ErlConnect connect = (this.factory.beginConnect(_socket)) as ErlConnect ;
+		//connect.socket = _socket;
+		byte[] b = connect.getCode ();
+		connect.socket.Send (b);
+		return connect;
+	}
 
     public void closeAllConnects()
     {
@@ -57,8 +65,8 @@ public class ConnectManager
 
     public void init(Object gameobject)
     {
-       // this.factory = gameobject.AddComponent(typeof(ErlConnectFactory)) as ErlConnectFactory;
-       // this.factory.startTime();
+		this.factory = new ErlConnectFactory ();  //gameobject.AddComponent(typeof(ErlConnectFactory)) as ErlConnectFactory;
+         //this.factory.startTime();
     }
 
     public bool isActive(string address, int port)
@@ -76,6 +84,7 @@ public class ConnectManager
         if (_manager == null)
         {
             _manager = new ConnectManager();
+			_manager.init (null);
         }
         return _manager;
     }

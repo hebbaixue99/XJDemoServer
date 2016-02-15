@@ -65,9 +65,17 @@ public class Connect : IDisposable
     {
         return ((this._localAddress == localAddress) && (this._localPort == localPort));
     }
-
+	public void open(Socket _socket)
+	{
+		if (_socket != null) {
+			this._localAddress = (_socket.RemoteEndPoint as IPEndPoint).Address.ToString ();
+			this._localPort = (_socket.RemoteEndPoint as IPEndPoint).Port;
+			this.socket = _socket;
+		}
+	}
     public void open(string address, int port)
     {
+		 
         this.init(address, port);
         if (this.Active)
         {

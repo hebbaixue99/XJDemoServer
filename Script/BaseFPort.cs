@@ -1,17 +1,27 @@
 ﻿using System;
 using NLog;
+using System.Net.Sockets;
  
 
-public class BaseFPort
+public class BaseFPort:PortHandler
 {
-	private CallBack callback;
+	private string _host="127.0.0.1";
+	private int _port=8885;
+	private ErlConnect _erlConnect;
+	//private CallBack callback;
 	public static bool flag;
 	protected bool lockUI = true;
 	public readonly Logger Log = LogManager.GetLogger("BaseFPort");
-
-	public void access(ErlKVMessage message , String host, int port)
+	public BaseFPort()
+	{
+	}
+	public BaseFPort(ErlConnect _socket)
+	{
+		this._erlConnect = _socket;
+	}
+	public void access(ErlKVMessage message)
 	{ 
-		ConnectManager.manager().sendMessage(host, port, message, new ReceiveFun(this.receive), null); 
+		ConnectManager.manager().sendMessage(this._host, this._port, message, new ReceiveFun(this.receive), null); 
 	}
 
 	public int Int(ErlType data)
@@ -39,9 +49,42 @@ public class BaseFPort
 		}
 	}
 
-	public void send(ErlKVMessage message ,string host,int port)
+	public void send(ErlKVMessage message )
 	{
-		ConnectManager.manager().sendMessage(host, port, message, null, null);
+		ConnectManager.manager().sendMessage(this._host, this._port, message, null, null);
+	}
+	public ErlConnect erlConnect
+	{
+		get
+		{
+			return this._erlConnect;
+		}
+		set
+		{
+			this._erlConnect = value;
+		}
+	}
+	public string host
+	{
+		get
+		{
+			return this._host;
+		}
+		set
+		{
+			this._host = value;
+		}
+	}
+	public int port
+	{
+		get
+		{
+			return this._port;
+		}
+		set
+		{
+			this._port = value;
+		}
 	}
 }
 

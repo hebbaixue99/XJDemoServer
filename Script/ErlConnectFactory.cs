@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Sockets;
 
 public class ErlConnectFactory : ConnectFactory
 {
@@ -14,6 +15,14 @@ public class ErlConnectFactory : ConnectFactory
         connect.portHandler = DataAccess.getInstance();
         return connect;
     }
+
+	public  Connect openConnect(Socket _socket)
+	{
+		ErlConnect connect = new ErlConnect();
+		connect.open(_socket);
+		connect.portHandler = DataAccess.getInstance();
+		return connect;
+	}
 
     public override void ping()
     {

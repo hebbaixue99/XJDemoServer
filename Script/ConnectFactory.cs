@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Net;
+using System.Net.Sockets;
  
 
 public class ConnectFactory 
@@ -28,6 +30,24 @@ public class ConnectFactory
         callBack();
         return item;
     }
+	public Connect beginConnect(Socket _socket)
+	{
+		String localAddress = (_socket.RemoteEndPoint as IPEndPoint).Address.ToString ();
+		int localPort = (_socket.RemoteEndPoint as IPEndPoint).Port;
+		Connect item = this.checkInstance(localAddress, localPort);
+		if (item == null)
+		{
+			//item = this.openConnect(_socket);
+			item = new ErlConnect();
+			item.socket = _socket;
+			this.connectArray.Add(item);
+			//item.CallBack = callBack;
+			//item.ConnectInvalidBack = invalidBack;
+			return item;
+		}
+		//callBack();
+		return item;
+	}
 
     public Connect checkInstance(string localAddress, int localPort)
     {
@@ -116,6 +136,8 @@ public class ConnectFactory
         connect.open(localAddress, localPort);
         return connect;
     }
+
+	 
 
     public virtual void ping()
     {

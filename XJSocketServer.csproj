@@ -108,6 +108,7 @@
     <Compile Include="Script\Server\SocketServerBase.cs" />
     <Compile Include="Script\Client\SocketClientDemo.cs" />
     <Compile Include="Script\BaseFPort.cs" />
+    <Compile Include="Script\ClientPort.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -132,7 +133,6 @@
     <Folder Include="Script\Server\" />
     <Folder Include="Script\Pool\" />
     <Folder Include="Script\Client\" />
-    <Folder Include="Test\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\AnimationOrTween\.DS_Store" />
