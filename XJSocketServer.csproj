@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{550B6619-A67D-4DF4-A3FA-D4F52BA26905}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>XJSocketServer</RootNamespace>
+    <AssemblyName>XJSocketServer</AssemblyName>
+    <StartupObject>SocketServerBase</StartupObject>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <CodePage>65001</CodePage>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="DemoMain.cs" />
+    <Compile Include="Script\msg_event.cs" />
+    <Compile Include="Script\CallBack.cs" />
+    <Compile Include="Script\ZIPUtil.cs" />
+    <Compile Include="Script\DataAccess.cs" />
+    <Compile Include="Script\StringKit.cs" />
+    <Compile Include="Script\ErlConnectFactory.cs" />
+    <Compile Include="Script\ConnectFactory.cs" />
+    <Compile Include="Script\ErlConnect.cs" />
+    <Compile Include="Script\MiniConnectManager.cs" />
+    <Compile Include="Script\ConnectManager.cs" />
+    <Compile Include="Script\TimeKit.cs" />
+    <Compile Include="Script\Connect.cs" />
+    <Compile Include="Script\BetterList!1.cs" />
+    <Compile Include="Script\ByteBuffer.cs" />
+    <Compile Include="Script\ByteReader.cs" />
+    <Compile Include="Script\StringExpression.cs" />
+    <Compile Include="Script\CallBackHandle.cs" />
+    <Compile Include="Script\CallBackMsg.cs" />
+    <Compile Include="Script\ConnectInvalidHandle.cs" />
+    <Compile Include="Script\ReceiveFun.cs" />
+    <Compile Include="Script\TimerHandle.cs" />
+    <Compile Include="Script\ChecksumUtil.cs" />
+    <Compile Include="Script\PortHandler.cs" />
+    <Compile Include="Script\Timer.cs" />
+    <Compile Include="Script\TimerManager.cs" />
+    <Compile Include="Script\TransmitPort.cs" />
+    <Compile Include="Script\ByteKit.cs" />
+    <Compile Include="Script\CharBuffer.cs" />
+    <Compile Include="Script\ErlEntry.cs" />
+    <Compile Include="Script\ErlKVMessage.cs" />
+    <Compile Include="Script\ErlPingPort.cs" />
+    <Compile Include="Script\ErlTransmitPort.cs" />
+    <Compile Include="Script\ConnectCount.cs" />
+    <Compile Include="Script\ErlArray.cs" />
+    <Compile Include="Script\ErlAtom.cs" />
+    <Compile Include="Script\ErlByte.cs" />
+    <Compile Include="Script\ErlByteArray.cs" />
+    <Compile Include="Script\ErlBytesReader.cs" />
+    <Compile Include="Script\ErlBytesWriter.cs" />
+    <Compile Include="Script\ErlDouble.cs" />
+    <Compile Include="Script\ErlInt.cs" />
+    <Compile Include="Script\ErlList.cs" />
+    <Compile Include="Script\ErlLong.cs" />
+    <Compile Include="Script\ErlNullList.cs" />
+    <Compile Include="Script\ErlObjectString.cs" />
+    <Compile Include="Script\ErlString.cs" />
+    <Compile Include="Script\ErlType.cs" />
+    <Compile Include="Script\TextKit.cs" />
+    <Compile Include="Script\ThreadKit.cs" />
+    <Compile Include="Script\CodecKit.cs" />
+    <Compile Include="Script\ErlKit.cs" />
+    <Compile Include="Script\MessageHandle.cs" />
+    <Compile Include="Script\CallbackGlobal.cs" />
+    <Compile Include="Script\Chat.cs" />
+    <Compile Include="Script\AnimationOrTween\Direction.cs" />
+    <Compile Include="Script\AnimationOrTween\DisableCondition.cs" />
+    <Compile Include="Script\AnimationOrTween\EnableCondition.cs" />
+    <Compile Include="Script\AnimationOrTween\Trigger.cs" />
+    <Compile Include="Script\Youkia\DomainAccess.cs" />
+    <Compile Include="Script\MiniJSON\Json.cs" />
+    <Compile Include="Script\SocketServer\ISocketServer.cs" />
+    <Compile Include="Script\SocketServer\ILogicServer.cs" />
+    <Compile Include="Script\SocketServer\BaseSocketServer.cs" />
+    <Compile Include="Script\SocketServer\AsyncClientArgs.cs" />
+    <Compile Include="Script\Pool\IPoolSlotHolder.cs" />
+    <Compile Include="Script\Pool\LockFreeSemaphore.cs" />
+    <Compile Include="Script\Pool\Pool.cs" />
+    <Compile Include="Script\Pool\PoolEx.cs" />
+    <Compile Include="Script\Pool\PoolSlot.cs" />
+    <Compile Include="Script\SocketServer\TcpClientArgsPool.cs" />
+    <Compile Include="Script\SocketServer\TcpSocketServer.cs" />
+    <Compile Include="Script\Server\SocketServerBase.cs" />
+    <Compile Include="Script\Client\SocketClientDemo.cs" />
+    <Compile Include="Script\BaseFPort.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Net" />
+    <Reference Include="LitJson">
+      <HintPath>..\XJDemoServer\Assets\Plugins\LitJson.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\XJDemoServer\Assets\Plugins\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="zlib.net">
+      <HintPath>..\XJDemoServer\Assets\Plugins\zlib.net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Script\" />
+    <Folder Include="Script\AnimationOrTween\" />
+    <Folder Include="Script\Youkia\" />
+    <Folder Include="Plugins\" />
+    <Folder Include="Script\MiniJSON\" />
+    <Folder Include="Script\Server\" />
+    <Folder Include="Script\Pool\" />
+    <Folder Include="Script\Client\" />
+    <Folder Include="Test\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Script\AnimationOrTween\.DS_Store" />
+    <None Include="Plugins\LitJson.dll" />
+    <None Include="Plugins\NLog.dll" />
+    <None Include="Plugins\NLog.xml" />
+    <None Include="Plugins\zlib.net.dll" />
+  </ItemGroup>
+</Project>
