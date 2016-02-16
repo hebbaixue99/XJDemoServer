@@ -6,12 +6,12 @@ using System.Net.Sockets;
 public class BaseFPort:PortHandler
 {
 	private string _host="127.0.0.1";
-	private int _port=8885;
+	private int _port=7612;
 	private ErlConnect _erlConnect;
 	//private CallBack callback;
 	public static bool flag;
 	protected bool lockUI = true;
-	public readonly Logger Log = LogManager.GetLogger("BaseFPort");
+	public readonly Logger Log = NLog.LogManager.GetCurrentClassLogger();
 	public BaseFPort()
 	{
 	}

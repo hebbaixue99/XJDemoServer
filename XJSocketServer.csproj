@@ -140,5 +140,6 @@
     <None Include="Plugins\NLog.dll" />
     <None Include="Plugins\NLog.xml" />
     <None Include="Plugins\zlib.net.dll" />
+    <None Include="Plugins\nlog.dll.nlog" />
   </ItemGroup>
 </Project>

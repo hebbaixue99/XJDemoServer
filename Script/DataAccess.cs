@@ -17,15 +17,18 @@ public class DataAccess : PortHandler
     {
         ByteBuffer data = new ByteBuffer();
         message.bytesWrite(data);
-        this._list.Add(new ErlEntry(connect, message.getPort(), receiveFun, argus, timeOut + TimeKit.getMillisTime()));
+        //this._list.Add(new ErlEntry(connect, message.getPort(), receiveFun, argus, timeOut + TimeKit.getMillisTime()));
         connect.sendErl(data, 1, 1, 1, 1);
-        if (this.timeout == null)
-        {
-            this.timeout = TimerManager.Instance.getTimer(0x1388L);
-            this.timeout.addOnTimer(new TimerHandle(this.onTimer));
-            this.timeout.start();
-        }
+         
     }
+	public void send(ErlConnect connect, ErlKVMessage message, ReceiveFun receiveFun, List<object> argus, long timeOut)
+	{
+		ByteBuffer data = new ByteBuffer();
+		message.bytesWrite(data);
+		//this._list.Add(new ErlEntry(connect, message.getPort(), receiveFun, argus, timeOut + TimeKit.getMillisTime()));
+		connect.sendErl(data, 0, 0, 0, 0);
+		 
+	}
 
     public void clearDataAccess()
     {

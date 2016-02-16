@@ -12,19 +12,20 @@ public class SocketServerBase
 	}
 
 	private static byte[] result = new byte[1024];
-	private static int myProt = 8885;
+	private static int myProt = 7612;
 	//端口
-	public readonly Logger Log = LogManager.GetLogger ("SocketServerBase");
+	public static readonly Logger Log = NLog.LogManager.GetCurrentClassLogger();
 	static Socket serverSocket;
 
 	static void Main (string[] args)
-	{  
+	{ 
+		Log.IsEnabled (LogLevel.Debug);
 		//服务器IP地址  
 		IPAddress ip = IPAddress.Parse ("0.0.0.0");  
 		serverSocket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);  
 		serverSocket.Bind (new IPEndPoint (ip, myProt));  //绑定IP地址：端口  
 		serverSocket.Listen (10);    //设定最多10个排队连接请求  
-		Console.WriteLine ("启动监听{0}成功", serverSocket.LocalEndPoint.ToString ());  
+		Log.Info ("启动监听{0}成功", serverSocket.LocalEndPoint.ToString ());  
 		//通过Clientsoket发送数据  
 		Thread myThread = new Thread (ListenClientConnect);  
 		myThread.Start ();  

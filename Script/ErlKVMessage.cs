@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NLog;
 
 public class ErlKVMessage
 {
@@ -8,6 +9,7 @@ public class ErlKVMessage
     private List<object> _value;
     private string jsonString = string.Empty;
     public const int VER = 0x83;
+	public readonly Logger Log = NLog.LogManager.GetCurrentClassLogger();
 
     public ErlKVMessage(string cmd)
     {
@@ -69,12 +71,13 @@ public class ErlKVMessage
     {
         uint num = (uint) data.readUnsignedShort();
         uint position = (uint) data.position;
-        if (data.readUnsignedByte() == 0x83)
-        {
+         if (data.readUnsignedByte() == 0x83)
+         {
             return ByteKit.complexAnalyse(data);
         }
         data.position = (int) position;
         return ByteKit.simpleAnalyse(data);
+		//return ByteKit.complexAnalyse(data);
     }
 
     public void bytesWrite(ByteBuffer data)
@@ -115,6 +118,13 @@ public class ErlKVMessage
             type = new ErlNullList();
         }
         ByteBuffer data = new ByteBuffer();
+
+		if (type.GetType().ToString() == "ErlArray") {
+			data.writeByte((byte)0x83);
+			Log.Info (type.GetType ().ToString());
+
+
+		}
         type.bytesWrite(data);
         sc_data.writeBytes(data, 0, data.bytesAvailable);
     }

@@ -74,7 +74,7 @@ public class ErlString : ErlType
         {
             return (key.ToString() + ':' + " ");
         }
-        object[] objArray1 = new object[] { key.ToString(), ':', this._value, '"' };
+        object[] objArray1 = new object[] { key.ToString(), ':', this._value, ' ' };
         return string.Concat(objArray1);
     }
 

@@ -75,27 +75,61 @@ public class ClientPort : BaseFPort
 	public void readMessage(ErlKVMessage message)
 	{
 		string str = message.Cmd;
+		Log.Info (str);
 		switch (str) {
 		case "/yxzh/user_login":
 			ErlKVMessage _message = new ErlKVMessage ("r_ok");
-			_message.addValue (null, 1);
+			//_message.addValue (null, new ErlByte (1));
 			_message.addValue ("msg", new ErlString ("login_ok"));
 			//base.send (message); 
 			//ConnectManager.manager ().sendMessage ();
-			DataAccess.getInstance().access(this.erlConnect, _message, null, null, 0x4e20L);
+			DataAccess.getInstance ().send (this.erlConnect, _message, null, null, 0x4e20L);
+			 
+			ErlKVMessage m1 = new ErlKVMessage ("guild");
+			m1.addValue("guild_skill",new ErlString("sdsf"));
+			DataAccess.getInstance ().send (this.erlConnect, m1, null, null, 0x4e20L);  
+
+			ErlKVMessage m2 = new ErlKVMessage ("chat");
+			m2.addValue("msg2",new ErlString("sdsf"));
+			DataAccess.getInstance ().send (this.erlConnect, m2, null, null, 0x4e20L);
 			break;
 		case "echo":
 			ErlKVMessage _messag = new ErlKVMessage ("r_ok");
-			_messag.addValue (null, 2);
+			_messag.addValue (null, new ErlByte(1));
 			 
 			//base.send (message); 
 			//ConnectManager.manager ().sendMessage ();
-			DataAccess.getInstance().access(this.erlConnect, _messag, null, null, 0x4e20L);
+			DataAccess.getInstance().send (this.erlConnect, _messag, null, null, 0x4e20L);
+			break;
+		case "/yxzh/role/get_user":
+			ErlKVMessage get_user = this.getUserInfo ();
+			 
+			DataAccess.getInstance().send(this.erlConnect, get_user, null, null, 0x4e20L);
 			break;
 		default:
+			
 			break;
 
+
 		}
+	}
+
+	private ErlKVMessage getUserInfo()
+	{
+		ErlKVMessage user = new ErlKVMessage ("r_ok");
+		ErlArray ua = new ErlArray (new ErlType[1]);
+		ErlArray  a = new ErlArray (new ErlType[3]);
+		 
+		a.Value [0] = new ErlString("sdfdsssssssss");
+		a.Value [1] = new ErlInt (1);
+		a.Value [2] = new ErlInt (1);
+		ua.Value [0] = a;
+		user.addValue("msg",ua);
+		//string,list(int,int),byte,byte,int,int,string,int,byte,byte,byte,byte,int,
+		//13-20byte,string,list(int,int,int,int),23-29byte,string,byte,int,byte,array(0),int
+		//int,byte,int,int,int,byte,byte,byte,int
+		//user.addValue ("msg", "");
+		return user ;
 	}
 
 	public override void read(ErlKVMessage message)
