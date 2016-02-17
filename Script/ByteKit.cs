@@ -11,6 +11,12 @@ public class ByteKit
         int position = data.position;
         int num2 = data.readByte();
         data.position = position;
+		if (num2 == 0) {
+			data.position = position + 2;
+			num2 = (int) data.readUnsignedByte();
+			position = (int) data.position;
+
+		}
         if ((num2 == ErlArray.TAG[0]) || (num2 == ErlArray.TAG[1]))
         {
             ErlArray array = new ErlArray(null);
@@ -143,13 +149,20 @@ public class ByteKit
     {
         uint position = (uint) data.position;
         uint num2 = (uint) data.readUnsignedByte();
-        if (num2 != 0x83)
+		if (num2 == 0) {
+			data.position = (int)(position + 2);
+		    num2 = (uint) data.readUnsignedByte();
+			position = (uint) data.position-1;
+		
+		}
+		if (num2 != 0x83||num2 != 0x68||num2 != 0x69)
         {
             data.position = (int) position;
-            if ((((num2 != ErlArray.TAG[0]) && (num2 != ErlArray.TAG[1])) && ((num2 != 0x6a) && (num2 != 0x6c))) && ((num2 != 100) && (num2 != 0x6d)))
-            {
-                return natureSampleAnalyse(data);
-            }
+			if ((((num2 != ErlArray.TAG [0]) && (num2 != ErlArray.TAG [1])) && ((num2 != 0x6a) && (num2 != 0x6c))) && ((num2 != 100) && (num2 != 0x6d))) {
+				return natureSampleAnalyse (data);
+			} else {
+				return complexAnalyse(data);
+			}
         }
         return complexAnalyse(data);
     }
@@ -159,6 +172,11 @@ public class ByteKit
         int position = data.position;
         int num2 = data.readByte();
         data.position = position;
+		if (num2 == 0) {
+			data.position = position + 2;
+			num2 = data.readByte();
+			data.position = position - 2;
+		}
         switch (num2)
         {
             case 0x61:
@@ -348,6 +366,10 @@ public class ByteKit
         int position = data.position;
         int num2 = data.readByte();
         data.position = position;
+		if (num2 == 0) {
+			data.position = position + 2;
+			num2 = data.readByte();
+		}
         switch (num2)
         {
             case 0x61:

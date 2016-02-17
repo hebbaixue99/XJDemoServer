@@ -71,9 +71,11 @@ public class ErlKVMessage
     {
         uint num = (uint) data.readUnsignedShort();
         uint position = (uint) data.position;
-         if (data.readUnsignedByte() == 0x83)
+		uint tag = (uint)data.readUnsignedByte ();
+		if (tag == 0x83||tag==0x68||tag==0x69)
          {
-            return ByteKit.complexAnalyse(data);
+			//data.position = (int) position;
+			return ByteKit.complexAnalyse(data);
         }
         data.position = (int) position;
         return ByteKit.simpleAnalyse(data);
@@ -122,8 +124,6 @@ public class ErlKVMessage
 		if (type.GetType().ToString() == "ErlArray") {
 			data.writeByte((byte)0x83);
 			Log.Info (type.GetType ().ToString());
-
-
 		}
         type.bytesWrite(data);
         sc_data.writeBytes(data, 0, data.bytesAvailable);

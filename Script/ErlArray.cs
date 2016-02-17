@@ -41,7 +41,6 @@ public class ErlArray : ErlType
     public override void bytesWrite(ByteBuffer data)
     {
         base.bytesWrite(data);
-		//data.writeByte(0x83);
         if ((this._value == null) || (this._value.Length < 1))
         {
             new ErlNullList().bytesWrite(data);

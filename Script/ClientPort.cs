@@ -76,8 +76,9 @@ public class ClientPort : BaseFPort
 	{
 		string str = message.Cmd;
 		Log.Info (str);
+		Log.Info (message.toJsonString());
 		switch (str) {
-		case "/yxzh/user_login":
+		case "/yxzh/user_login1":
 			ErlKVMessage _message = new ErlKVMessage ("r_ok");
 			//_message.addValue (null, new ErlByte (1));
 			_message.addValue ("msg", new ErlString ("login_ok"));
@@ -106,6 +107,11 @@ public class ClientPort : BaseFPort
 			 
 			DataAccess.getInstance().send(this.erlConnect, get_user, null, null, 0x4e20L);
 			break;
+		case "/yxzh/user_login":
+			ErlKVMessage get_user1 = this.getUserInfo ();
+
+			DataAccess.getInstance().send(this.erlConnect, get_user1, null, null, 0x4e20L);
+			break;
 		default:
 			
 			break;
@@ -114,17 +120,51 @@ public class ClientPort : BaseFPort
 		}
 	}
 
-	private ErlKVMessage getUserInfo()
+	public static void Main(string[] args)
 	{
-		ErlKVMessage user = new ErlKVMessage ("r_ok");
 		ErlArray ua = new ErlArray (new ErlType[1]);
 		ErlArray  a = new ErlArray (new ErlType[3]);
-		 
-		a.Value [0] = new ErlString("sdfdsssssssss");
+		a.Value [0] = new ErlByte (10);
 		a.Value [1] = new ErlInt (1);
 		a.Value [2] = new ErlInt (1);
 		ua.Value [0] = a;
-		user.addValue("msg",ua);
+		Log.Info (ua.getValueString());
+		ErlArray ub = new ErlArray (null);
+		ByteBuffer data = new ByteBuffer ();
+		ua.bytesWrite (data);
+		ub.bytesRead (data);
+		Log.Info (ub.getValueString());
+		/*ErlString e = new ErlString ("sdddddddddddddd");
+		Log.Info (e.getValueString ());
+		ErlString e2 = new ErlString (null);
+		ByteBuffer data = new ByteBuffer ();
+		e.bytesWrite(data);
+		e2.bytesRead(data);
+		Log.Info (e2.getValueString());*/
+
+	}
+
+	private ErlKVMessage getUserInfo()
+	{
+		//[20,[[9,7],[10,5],[8,13],[7,8],[6,5],[5,3],[4,12],[3,7],[2,16],[1,6]]]
+		ErlKVMessage user = new ErlKVMessage ("r_ok");
+		ErlArray ua = new ErlArray (new ErlType[2]);
+		ErlArray ub = new ErlArray (new ErlType[9]);
+		ub.Value [0] = new ErlArray (new ErlType[]{ new ErlByte(9),new ErlByte(7)});
+		ub.Value [1] = new ErlArray (new ErlType[]{ new ErlByte(10),new ErlByte(5)});
+		ub.Value [2] = new ErlArray (new ErlType[]{ new ErlByte(8),new ErlByte(13)});
+		ub.Value [3] = new ErlArray (new ErlType[]{ new ErlByte(7),new ErlByte(8)});
+		ub.Value [4] = new ErlArray (new ErlType[]{ new ErlByte(6),new ErlByte(5)});
+		ub.Value [5] = new ErlArray (new ErlType[]{ new ErlByte(4),new ErlByte(12)});
+		ub.Value [6] = new ErlArray (new ErlType[]{ new ErlByte(3),new ErlByte(7)});
+		ub.Value [7] = new ErlArray (new ErlType[]{ new ErlByte(2),new ErlByte(16)});
+		ub.Value [8] = new ErlArray (new ErlType[]{ new ErlByte(1),new ErlByte(6)});
+		ua.Value [0] = new ErlByte (20);
+		ua.Value [1] = ub;
+		//ua.isTag (0x69);
+		 
+		 
+		user.addValue("guild_skill",ua);
 		//string,list(int,int),byte,byte,int,int,string,int,byte,byte,byte,byte,int,
 		//13-20byte,string,list(int,int,int,int),23-29byte,string,byte,int,byte,array(0),int
 		//int,byte,int,int,int,byte,byte,byte,int

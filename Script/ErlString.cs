@@ -37,8 +37,9 @@ public class ErlString : ErlType
         {
             ByteBuffer b = new ByteBuffer();
             b.writeUTFBytes(this._value);
-            data.writeShort(b.top + 1);
+			data.writeShort(b.top + 1);
             data.writeByte(0x6b);
+
             data.writeBytes(b, 0, b.bytesAvailable);
         }
     }
@@ -102,6 +103,7 @@ public class ErlString : ErlType
         base.bytesRead(data);
         if (this.isTag(base._tag))
         {
+			data.position = data.position - 3;
             uint num = (uint) data.readUnsignedShort();
             this._value = string.Empty;
             uint position = (uint) data.position;

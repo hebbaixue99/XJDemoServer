@@ -11,7 +11,7 @@ public class BaseFPort:PortHandler
 	//private CallBack callback;
 	public static bool flag;
 	protected bool lockUI = true;
-	public readonly Logger Log = NLog.LogManager.GetCurrentClassLogger();
+	public static readonly Logger Log = NLog.LogManager.GetCurrentClassLogger();
 	public BaseFPort()
 	{
 	}

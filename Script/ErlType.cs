@@ -8,6 +8,10 @@ public class ErlType : ErlBytesReader, ErlBytesWriter
     {
         int position = data.position;
         this._tag = data.readByte();
+		if (this._tag == 0) {
+			data.position = position + 2;
+			this._tag = data.readByte ();
+		}
         if (!this.isTag(this._tag))
         {
             data.position = position;
