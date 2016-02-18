@@ -64,7 +64,7 @@ public class ErlArray : ErlType
                 {
                     writer = new ErlNullList();
                 }
-                writer.bytesWrite(data);
+                writer.bytesWriteServer(data);
             }
         }
     }

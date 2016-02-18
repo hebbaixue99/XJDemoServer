@@ -121,12 +121,17 @@ public class ErlKVMessage
         }
         ByteBuffer data = new ByteBuffer();
 
-		if (type.GetType().ToString() == "ErlArray") {
-			data.writeByte((byte)0x83);
-			Log.Info (type.GetType ().ToString());
+		if (type.GetType ().ToString () == "ErlArray") {
+			data.writeByte ((byte)0x83);
+			Log.Info (type.GetType ().ToString ());
+			type.bytesWriteServer (data);
+			sc_data.writeByte (0);
+			sc_data.writeByte ((byte)data.bytesAvailable);
+			sc_data.writeBytes (data, 0, data.bytesAvailable);
+		} else {
+			type.bytesWrite (data);
+			sc_data.writeBytes (data, 0, data.bytesAvailable);
 		}
-        type.bytesWrite(data);
-        sc_data.writeBytes(data, 0, data.bytesAvailable);
     }
 
     public int getPort()

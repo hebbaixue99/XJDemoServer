@@ -22,7 +22,9 @@ public class ErlInt : ErlType
     public override void bytesWrite(ByteBuffer data)
     {
         base.bytesWrite(data);
-        data.writeShort(5);
+		if (!this.isServer) {
+			data.writeShort (5);
+		}
         data.writeByte(0x62);
         data.writeInt(this._value);
     }

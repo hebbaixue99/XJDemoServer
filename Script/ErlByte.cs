@@ -22,7 +22,7 @@ public class ErlByte : ErlType
     public override void bytesWrite(ByteBuffer data)
     {
         base.bytesWrite(data);
-        data.writeShort(2);
+        //data.writeShort(2);
         data.writeByte(0x61);
         data.writeByte(this._value);
     }

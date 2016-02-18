@@ -26,23 +26,30 @@ public class ErlString : ErlType
         }
     }
 
-    public override void bytesWrite(ByteBuffer data)
-    {
-        base.bytesWrite(data);
-        if ((this._value == null) || (this._value.Length < 1))
-        {
-            new ErlNullList().bytesWrite(data);
-        }
-        else
-        {
-            ByteBuffer b = new ByteBuffer();
-            b.writeUTFBytes(this._value);
-			data.writeShort(b.top + 1);
-            data.writeByte(0x6b);
+    
+	public override void bytesWrite(ByteBuffer data)
+	{
+		base.bytesWrite(data);
+		if ((this._value == null) || (this._value.Length < 1))
+		{
+			new ErlNullList().bytesWrite(data);
+		}
+		else
+		{
+			ByteBuffer b = new ByteBuffer();
+			data.writeBytes(b, 0, b.bytesAvailable);
+			b.writeUTFBytes (this._value);
+			if (base.isServer) {
+				data.writeByte (0x6b);
+				data.writeShort(b.top );
+			} else {
+				data.writeShort(b.top + 1);
+				data.writeByte (0x6b);
+			}
 
-            data.writeBytes(b, 0, b.bytesAvailable);
-        }
-    }
+			data.writeBytes(b, 0, b.bytesAvailable);
+		}
+	}
 
     public string getASCII()
     {
