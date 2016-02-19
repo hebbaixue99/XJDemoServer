@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Collections;
+using System.Collections.Generic;
+using NLog;
 
 public class StringKit
 {
     public const char POUND_SIGN = '#';
     public const char USD_SIGN = '$';
-
+	public static readonly Logger Log = NLog.LogManager.GetCurrentClassLogger();
     public static bool containsEmoji(string source)
     {
         if (!string.IsNullOrEmpty(source))
@@ -341,5 +344,132 @@ public class StringKit
             return string.Empty;
         }
     }
+	public static void getErlType(string strValue, string strType,ErlArray ea ,Stack skValue ,Stack skType )
+	{
+		string tmpValue = "";
+		string tmpType = "";
+		for (int i = 0; i < strValue.Length; i++) {
+			if (strValue.Substring (i, 1) == "[") {
+				skValue.Push(strValue.Substring(0,i+1));
+				tmpValue = strValue.Substring (i+1, strValue.Length - i-1);
+				 break;
+			}
+		}
+		for (int i = 0; i < strType.Length; i++) {
+			if (strType.Substring (i, 1) == "[") {
+				skType.Push(strType.Substring(0,i+1));
+				tmpType = strType.Substring (i+1, strType.Length - i-1);
+				 break;
+			}
+			 
+		} 
+	}
+	 
+	public static ErlType[]  toErlTypeArray(string strValue , string strType, char c)
+	{
+		if (string.IsNullOrEmpty(strValue))
+		{
+			return null;
+		}
+		char[] separator = new char[] { c };
+		string[] strArray = strValue.Split(separator);
+		string[] strTypeArray = strType.Split(separator);
+		ErlType[] erlTypeArray = new ErlType[strArray.Length];
+		for (int i = 0; i < strArray.Length; i++)
+		{
+			erlTypeArray[i] = toErlType(strArray[i],strTypeArray[i]);
+		}
+		return erlTypeArray;	
+	}
+	public static ErlType  toErlType(string strValue , string strType)
+	{
+		if (string.IsNullOrEmpty(strValue))
+		{
+			return new ErlNullList();
+		}
+		switch (strType) {
+		case "string":
+			return new ErlString (strValue);
+		case "byte":
+			return new ErlByte (toInt (strValue));
+		case "int":
+			return new ErlInt (toInt (strValue));
+		case "double":
+			return new ErlDouble (toLong(strValue));
+		default :
+			if (strType.Length>5&&strType.Substring (0, 4) == "list") {
+				string tmpValue = strValue.Substring (1, strValue.Length - 2);
+				string tmpType = strType.Substring (5, strType.Length - 6);
+				ErlType[] list = toErlTypeArray (tmpValue,tmpType , ':');
+				ErlList elist = new ErlList (list);
+				return elist;
+			}
+			if (strType.Length>6&&strType.Substring (0, 5) == "array") {
+				string tmpValue = strValue.Substring (1, strValue.Length - 2);
+				string tmpType = strType.Substring (6, strType.Length - 7);
+				ErlType[] list = toErlTypeArray (tmpValue,tmpType , ':');
+				ErlArray elist = new ErlArray (list);
+				return elist;
+			}
+			return new ErlNullList (); 
+		}
+		 
+	}
+
+	public static ErlType[] strToErlTypeArray(string strValue,string strType)
+	{
+		List<Object> list = MiniJSON.Json.Deserialize (strValue) as List<Object> ;
+		ErlType[] et = listToErlTypeArray (list, strType);
+		return et;
+	}
+	public static ErlType[] listToErlTypeArray(List<Object> list , string strType)
+	{
+		ErlType[] et = new ErlType[list.Count];
+		string[] strTypeArray = strType.Split(',');
+		int k = 0;
+		for (int i = 0; i < list.Count; i++) {
+			if (list [i].GetType ().Name.Contains ("List")) {
+				List<Object> tmpList = list [i] as List<Object>;
+				string tmptype ="";
+				for (int n = 0; n < tmpList.Count; n++) {
+					tmptype =tmptype + strTypeArray [k]+",";
+					k++;
+				}
+				ErlArray ea = new ErlArray(
+					listToErlTypeArray (tmpList, tmptype)) ;
+				et [i] = ea;
+
+			} else {
+				et[i]= toErlType(list[i].ToString(),strTypeArray[k]);
+				k ++;
+			}
+
+		}
+		return et;
+	}
+
+	public static void Main(string[] args)
+	{
+		Log.Info ("---------------");
+		String strValue = "[\"281629595547903\",\"蒲冰\",1,1,211060878,15215,\"281629599247928\",10533472,199,0,60,60,0,3,3,0,5,5,0,1,50,\"281629595533335\",\"名剑山庄\",0,0,0,0,0,0,0,\"1455784932990\",1,47190,41,[0],129276,126868,152,1429891200,18320,1396530,0,0,20,11776]]";
+		String strType = "string,string,byte,byte,int,int,string,int,byte,byte,byte,byte,int,byte,byte,byte,byte,byte,byte,byte,byte,string,string,";
+		strType = strType+"byte,byte,byte,byte,byte,byte,byte,string,byte,int,byte,int,int,int,byte,int,int,int,byte,byte,byte,int";
+
+		ErlType[] et = strToErlTypeArray (strValue, strType);
+		ErlArray ea = new ErlArray (et);
+		Log.Info (ea.getValueString());
+
+
+		//Log.Info (ov);
+	    
+		/*
+		ErlType[] et = toErlTypeArray (strValue, strType, ',');
+		ErlArray ea = new ErlArray (et);
+		ErlString e = new ErlString ("dsf");
+		*/
+		//e.bytesWrite
+
+		//Log.Info (ea.getValueString ());
+	}
 }
 

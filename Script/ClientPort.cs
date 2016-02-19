@@ -81,22 +81,31 @@ public class ClientPort : BaseFPort
 		case "/yxzh/user_login":
 			ErlKVMessage _message = new ErlKVMessage ("r_ok");
 			//_message.addValue (null, new ErlByte (1));
-			_message.addValue ("msg", new ErlString ("login_ok"));
+			_message.addValue ("msg", new ErlAtom("login_ok"));
 			//base.send (message); 
 			//ConnectManager.manager ().sendMessage ();
 			DataAccess.getInstance ().send (this.erlConnect, _message, null, null, 0x4e20L);
-			 
+			/* 
 			ErlKVMessage m1 = this.getguild ();
+			//[20,[[9,7],[10,5],[8,13],[7,8],[6,5],[5,3],[4,12],[3,7],[2,16],[1,6]]]
 			 
-			DataAccess.getInstance ().send (this.erlConnect, m1, null, null, 0x4e20L);  
+			DataAccess.getInstance ().send (this.erlConnect, m1, null, null, 0x4e20L);  */ 
 
-			ErlKVMessage m2 = new ErlKVMessage ("chat");
-			m2.addValue("msg2",new ErlString("sdsf"));
-			DataAccess.getInstance ().send (this.erlConnect, m2, null, null, 0x4e20L);
+
+			/*ErlKVMessage m2 = new ErlKVMessage ("chat");
+
+
+			String strValue = "[[\"281629595545724\",\"淸幽幽\",15000,1,1453969242,1,1,\"他们都是猫\",\"none\"],[\"none\",\"none\",\"none\"]]";
+			String strType = "string,string,int,byte,int,byte,byte,string,string,string,string,string";
+			ErlType[] et = StringKit.strToErlTypeArray (strValue, strType);
+			ErlArray ub = new ErlArray (et); 	
+			 
+			m2.addValue("msg2",ub);
+			DataAccess.getInstance ().send (this.erlConnect, m2, null, null, 0x4e20L);  */
 			break;
 		case "echo":
 			ErlKVMessage _messag = new ErlKVMessage ("r_ok");
-			_messag.addValue (null, new ErlByte(1));
+			//_messag.addValue (null, new ErlByte(1));
 			 
 			//base.send (message); 
 			//ConnectManager.manager ().sendMessage ();
@@ -112,7 +121,25 @@ public class ClientPort : BaseFPort
 
 			DataAccess.getInstance().send(this.erlConnect, get_user1, null, null, 0x4e20L);
 			break;
-		default:
+		case "/yxzh/get_online_time":
+			ErlKVMessage msg1 = new ErlKVMessage ("r_ok");
+			String strValue3 = "[126,[]]";
+			String strType3 = "int,string";
+			ErlType[] et3 = StringKit.strToErlTypeArray (strValue3, strType3);
+			ErlArray ub3 = new ErlArray (et3); 	
+			msg1.addValue("msg",ub3);
+			DataAccess.getInstance().send(this.erlConnect, msg1, null, null, 0x4e20L);
+			break;
+		case "/yxzh/get_stone_lv":
+			ErlKVMessage msg2 = new ErlKVMessage ("r_ok");
+			String strValue1 = "[[3,35],[2,40],[1,35],[5,55],[4,45]]";
+			String strType1 = "byte,byte,byte,byte,byte,byte,byte,byte,byte,byte";
+			ErlType[] et1 = StringKit.strToErlTypeArray (strValue1, strType1);
+			ErlArray ub1 = new ErlArray (et1); 	
+			msg2.addValue("msg",ub1);
+			DataAccess.getInstance().send(this.erlConnect, msg2, null, null, 0x4e20L);
+			break;
+		default: 
 			
 			break;
 
@@ -147,22 +174,15 @@ public class ClientPort : BaseFPort
 	private ErlKVMessage getUserInfo ()
 	{
 		//[20,[[9,7],[10,5],[8,13],[7,8],[6,5],[4,12],[3,7],[2,16],[1,6]]]
-		//[281629595547903,蒲冰,1,1,211060878,15215,281629599247928,10533472,199,0,60,60,0,3,3,0,5,5,0,1,50,281629595533335,名剑山庄,
-		//0,0,0,0,0,0,0,1455784932990,1,47190,41,[],129276,126868,152,1429891200,18320,1396530,0,0,20,11776]
-
+		 
 		ErlKVMessage user = new ErlKVMessage ("r_ok");
 		 
-		ErlArray ub = new ErlArray (new ErlType[45]);
-		ub.Value [0] = new ErlString ("281629595547903");
-		ub.Value [1] = new ErlString ("蒲冰");
-		ub.Value [2] = new ErlByte (1);
-		ub.Value [3] = new ErlByte (1);
-		ub.Value [4] = new ErlInt (211060878);
-		ub.Value [5] = new ErlInt (15215);
-		ub.Value [6] = new ErlString ("281629599247928");
-		ub.Value [7] = new ErlInt (10533472);
-		ub.Value [8] = new ErlByte (199);
-		//ua.isTag (0x69);
+		String strValue = "[\"281629595547903\",\"蒲冰\",1,1,211060878,15215,\"281629599247928\",10533472,199,0,60,60,0,3,3,0,5,5,0,1,50,\"281629595533335\",\"名剑山庄\",0,0,0,0,0,0,0,\"1455784932990\",1,47190,41,[0],129276,126868,152,1429891200,18320,1396530,0,0,20,11776]]";
+		String strType = "string,string,byte,byte,int,int,string,int,byte,byte,byte,byte,int,byte,byte,byte,byte,byte,byte,byte,byte,string,string,";
+		strType = strType+"byte,byte,byte,byte,byte,byte,byte,string,byte,int,byte,int,int,int,byte,int,int,int,byte,byte,byte,int";
+
+		ErlType[] et = StringKit.strToErlTypeArray (strValue, strType);
+		ErlArray ub = new ErlArray (et); 	
 		user.addValue("msg",ub);
 		//string,list(int,int),byte,byte,int,int,string,int,byte,byte,byte,byte,int,
 		//13-20byte,string,list(int,int,int,int),23-29byte,string,byte,int,byte,array(0),int

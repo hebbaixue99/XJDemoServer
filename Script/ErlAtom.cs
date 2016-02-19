@@ -7,7 +7,7 @@ public class ErlAtom : ErlType
 
     public ErlAtom(string _value)
     {
-        this._value = this.Value;
+		this._value = _value;
     }
 
     public override void bytesRead(ByteBuffer data)
@@ -37,6 +37,7 @@ public class ErlAtom : ErlType
             data.writeShort(this._value.Length);
             for (int i = 0; i < this._value.Length; i++)
             {
+				data.writeChar (this.Value [i]);
             }
         }
     }
