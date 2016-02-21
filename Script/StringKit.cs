@@ -388,6 +388,8 @@ public class StringKit
 			return new ErlNullList();
 		}
 		switch (strType) {
+		case "atom":
+			return new ErlAtom (strValue);
 		case "string":
 			return new ErlString (strValue);
 		case "byte":
@@ -416,31 +418,43 @@ public class StringKit
 		 
 	}
 
-	public static ErlType[] strToErlTypeArray(string strValue,string strType)
+	public static ErlType[] strToErlTypeArray(string strValue)
 	{
-		List<Object> list = MiniJSON.Json.Deserialize (strValue) as List<Object> ;
-		ErlType[] et = listToErlTypeArray (list, strType);
+		strValue =strValue.Replace("'","\"");
+		List<Object> list = MiniJSON.Json.Deserialize (strValue) as List<Object> ; 
+		ErlType[] et = listToErlTypeArray (list);
 		return et;
 	}
-	public static ErlType[] listToErlTypeArray(List<Object> list , string strType)
+	public static ErlType[] listToErlTypeArray(List<Object> list )
 	{
 		ErlType[] et = new ErlType[list.Count];
-		string[] strTypeArray = strType.Split(',');
+		//string[] strTypeArray = strType.Split(',');
 		int k = 0;
 		for (int i = 0; i < list.Count; i++) {
 			if (list [i].GetType ().Name.Contains ("List")) {
 				List<Object> tmpList = list [i] as List<Object>;
-				string tmptype ="";
-				for (int n = 0; n < tmpList.Count; n++) {
-					tmptype =tmptype + strTypeArray [k]+",";
-					k++;
+				if (tmpList.Count > 0) {	
+					et [i] = new ErlArray (
+						listToErlTypeArray (tmpList));
+				} else {
+					et [i] = new ErlArray (new ErlType[0]);
 				}
-				ErlArray ea = new ErlArray(
-					listToErlTypeArray (tmpList, tmptype)) ;
-				et [i] = ea;
-
 			} else {
-				et[i]= toErlType(list[i].ToString(),strTypeArray[k]);
+				string tmpstr = list [i].ToString ();
+				string tmpType = "string";
+				if (list [i].GetType ().Name.ToLower ().Contains ("int")) {
+					int count = StringKit.toInt (list [i].ToString ());
+
+					if (count < 255) {
+						tmpType = "byte";
+					} else {
+						tmpType = "int";
+					}
+				} else if(tmpstr.ToLower ().Contains("(erlatom)")) {
+					tmpstr = tmpstr.Substring (0, tmpstr.Length - 9);
+					tmpType = "atom";
+				}
+				et[i] = toErlType(tmpstr,tmpType);
 				k ++;
 			}
 
@@ -455,7 +469,7 @@ public class StringKit
 		String strType = "string,string,byte,byte,int,int,string,int,byte,byte,byte,byte,int,byte,byte,byte,byte,byte,byte,byte,byte,string,string,";
 		strType = strType+"byte,byte,byte,byte,byte,byte,byte,string,byte,int,byte,int,int,int,byte,int,int,int,byte,byte,byte,int";
 
-		ErlType[] et = strToErlTypeArray (strValue, strType);
+		ErlType[] et = strToErlTypeArray (strValue);
 		ErlArray ea = new ErlArray (et);
 		Log.Info (ea.getValueString());
 

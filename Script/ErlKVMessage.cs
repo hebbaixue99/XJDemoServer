@@ -121,7 +121,7 @@ public class ErlKVMessage
         }
         ByteBuffer data = new ByteBuffer();
 
-		if (type.GetType ().ToString () == "ErlArray") {
+		if (type.GetType ().ToString () == "ErlArray"||type.GetType ().ToString () == "ErlAtom") {
 			data.writeByte ((byte)0x83);
 			Log.Info (type.GetType ().ToString ());
 			type.bytesWriteServer (data);

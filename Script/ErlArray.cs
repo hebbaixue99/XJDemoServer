@@ -43,7 +43,10 @@ public class ErlArray : ErlType
         base.bytesWrite(data);
         if ((this._value == null) || (this._value.Length < 1))
         {
-            new ErlNullList().bytesWrite(data);
+            //new ErlNullList().bytesWrite(data);
+			//(new ErlType[0]).
+			data.writeByte(TAG[0]);
+			data.writeByte(0);
         }
         else
         {

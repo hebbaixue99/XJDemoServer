@@ -37,7 +37,7 @@ public class ErlAtom : ErlType
             data.writeShort(this._value.Length);
             for (int i = 0; i < this._value.Length; i++)
             {
-				data.writeChar (this.Value [i]);
+				data.writeByte((char)this.Value [i]);
             }
         }
     }
