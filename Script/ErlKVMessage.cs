@@ -84,7 +84,7 @@ public class ErlKVMessage
 
     public void bytesWrite(ByteBuffer data)
     {
-        this.addValue(null, new ErlInt(ConnectCount.getInstance().number));
+        //this.addValue(null, new ErlInt(ConnectCount.getInstance().number));
         this.bytesWriteKey(data, this._cmd);
         this.bytesWriteInfo(data);
     }

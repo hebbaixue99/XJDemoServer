@@ -81,29 +81,16 @@ public class ClientPort : BaseFPort
 		case "/yxzh/user_login":
 			ErlKVMessage _message = new ErlKVMessage ("r_ok");
 			//_message.addValue (null, new ErlByte (1));
-			_message.addValue ("msg", new ErlAtom("login_ok"));
+			_message.addValue ("msg", new ErlAtom ("login_ok"));
+			_message.addValue(null, new ErlInt( message.getPort ()));
+
 			//base.send (message); 
 			//ConnectManager.manager ().sendMessage ();
 			DataAccess.getInstance ().send (this.erlConnect, _message, null, null, 0x4e20L);
 			 
-
-			break;
-		case "echo":
-			ErlKVMessage _messag = new ErlKVMessage ("r_ok");
-			//_messag.addValue (null, new ErlByte(1));
-			 
-			//base.send (message); 
-			//ConnectManager.manager ().sendMessage ();
-			DataAccess.getInstance().send (this.erlConnect, _messag, null, null, 0x4e20L);
-			break;
-		case "/yxzh/role/get_user":
-			ErlKVMessage get_user = this.getUserInfo ();
-			 
-			DataAccess.getInstance().send(this.erlConnect, get_user, null, null, 0x4e20L);
-
 			ErlKVMessage m1 = this.getguild ();
 			//[20,[[9,7],[10,5],[8,13],[7,8],[6,5],[5,3],[4,12],[3,7],[2,16],[1,6]]]
-			/*
+
 			DataAccess.getInstance ().send (this.erlConnect, m1, null, null, 0x4e20L);   
 
 
@@ -116,12 +103,29 @@ public class ClientPort : BaseFPort
 			ErlArray ub = new ErlArray (et); 	
 
 			m2.addValue("msg2",ub);
-			DataAccess.getInstance ().send (this.erlConnect, m2, null, null, 0x4e20L);   */
+			DataAccess.getInstance ().send (this.erlConnect, m2, null, null, 0x4e20L);   
+			break;
+		case "echo":
+			ErlKVMessage _messag = new ErlKVMessage ("r_ok");
+			_messag.addValue(null,new ErlInt( message.getPort ()));
+			//_messag.addValue (null, new ErlByte(1));
+			 
+			//base.send (message); 
+			//ConnectManager.manager ().sendMessage ();
+			DataAccess.getInstance().send (this.erlConnect, _messag, null, null, 0x4e20L);
+			break;
+		case "/yxzh/role/get_user":
+			ErlKVMessage get_user = this.getUserInfo ();
+			get_user.addValue(null,new ErlInt( message.getPort ()));
+			 
+			DataAccess.getInstance().send(this.erlConnect, get_user, null, null, 0x4e20L);
+
+
 
 			break;
 		case "/yxzh/user_login1":
 			ErlKVMessage get_user1 = this.getUserInfo ();
-
+		 
 			DataAccess.getInstance().send(this.erlConnect, get_user1, null, null, 0x4e20L);
 			break;
 		case "/yxzh/get_online_time":
@@ -130,7 +134,8 @@ public class ClientPort : BaseFPort
 			 
 			ErlType[] et3 = StringKit.strToErlTypeArray (strValue3);
 			ErlArray ub3 = new ErlArray (et3); 	
-			msg1.addValue("msg",ub3);
+			msg1.addValue ("msg", ub3);
+			msg1.addValue (null, new ErlInt( message.getPort ()));
 			DataAccess.getInstance().send(this.erlConnect, msg1, null, null, 0x4e20L);
 			break;
 		case "/yxzh/get_stone_lv":
@@ -139,7 +144,8 @@ public class ClientPort : BaseFPort
 			 
 			ErlType[] et1 = StringKit.strToErlTypeArray (strValue1);
 			ErlArray ub1 = new ErlArray (et1); 	
-			msg2.addValue("msg",ub1);
+			msg2.addValue ("msg", ub1);
+			msg2.addValue (null, new ErlInt( message.getPort ()));
 			DataAccess.getInstance().send(this.erlConnect, msg2, null, null, 0x4e20L);
 			break;
 		case "/yxzh/guide/get":
@@ -148,17 +154,19 @@ public class ClientPort : BaseFPort
 			 
 			ErlType[] et_guide_get = StringKit.strToErlTypeArray (strValue_guide_get);
 			ErlArray ub_guide_get = new ErlArray (et_guide_get); 	
-			msg_guide_get.addValue("msg",ub_guide_get);
+			msg_guide_get.addValue ("msg", ub_guide_get);
+			msg_guide_get.addValue (null, new ErlInt( message.getPort ()));
 			DataAccess.getInstance().send(this.erlConnect, msg_guide_get, null, null, 0x4e20L);
 			break;
 		case "/yxzh/storage/get_storage":
 			string stype = (message.getValue ("type") as ErlString).Value;
 			ErlKVMessage msg_get_storage = new ErlKVMessage ("r_ok");
-			String strValue_get_storage = ConfigHelper.GetAppConfig ("get_storage_"+stype);
+			String strValue_get_storage = ConfigHelper.GetAppConfig ("get_storage_" + stype);
 			 
 			ErlType[] et_get_storage = StringKit.strToErlTypeArray (strValue_get_storage);
 			ErlArray ub_get_storage = new ErlArray (et_get_storage); 	
-			msg_get_storage.addValue("msg",ub_get_storage);
+			msg_get_storage.addValue ("msg", ub_get_storage);
+			msg_get_storage.addValue (null, new ErlInt( message.getPort ()));
 			DataAccess.getInstance().send(this.erlConnect, msg_get_storage, null, null, 0x4e20L);
 			break;
 		case "/yxzh/get_user_switch":
@@ -168,7 +176,8 @@ public class ClientPort : BaseFPort
 
 			ErlType[] et_get_user_switch = StringKit.strToErlTypeArray (strValue_get_user_switch);
 			ErlArray ub_get_user_switch = new ErlArray (et_get_user_switch); 	
-			msg_get_user_switch.addValue("msg",ub_get_user_switch);
+			msg_get_user_switch.addValue ("msg", ub_get_user_switch);
+			msg_get_user_switch.addValue (null, new ErlInt( message.getPort ()));
 			DataAccess.getInstance().send(this.erlConnect, msg_get_user_switch, null, null, 0x4e20L);
 			break;
 		case "/yxzh/role/get_user_new":
@@ -178,7 +187,8 @@ public class ClientPort : BaseFPort
 
 			ErlType[] et_get_user_new = StringKit.strToErlTypeArray (strValue_get_user_new);
 			ErlArray ub_get_user_new = new ErlArray (et_get_user_new); 	
-			msg_get_user_new.addValue("msg",ub_get_user_new);
+			msg_get_user_new.addValue ("msg", ub_get_user_new);
+			msg_get_user_new.addValue (null, new ErlInt( message.getPort ()));
 			DataAccess.getInstance().send(this.erlConnect, msg_get_user_new, null, null, 0x4e20L);
 			break;
 		case "/yxzh/labyrinth/get_info":
@@ -188,7 +198,8 @@ public class ClientPort : BaseFPort
 
 			ErlType[] et_get_info = StringKit.strToErlTypeArray (strValue_get_info);
 			ErlArray ub_get_info = new ErlArray (et_get_info); 	
-			msg_get_info.addValue("msg",ub_get_info);
+			msg_get_info.addValue ("msg", ub_get_info);
+			msg_get_info.addValue (null, new ErlInt( message.getPort ()));
 			DataAccess.getInstance().send(this.erlConnect, msg_get_info, null, null, 0x4e20L);
 			break;
 		default: 
