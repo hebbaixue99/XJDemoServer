@@ -67,6 +67,7 @@ public class ClientPort : BaseFPort
 			case "/yxzh/week_award/init":
 			case "/yxzh/expedition/get_base_info":	
 			case "/yxzh/opentask/get_opentasks":
+			case "/yxzh/title/get_title":
 
 				String strValue = ConfigHelper.GetAppConfig (message.Cmd);
 				ErlKVMessage dmsg = new ErlKVMessage ("r_ok");

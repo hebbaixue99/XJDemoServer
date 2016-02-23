@@ -27,7 +27,8 @@ public class BaseFPort:PortHandler
 		{ "/yxzh/guild/builds_level,/yxzh/guild/get_guild_skill", new GuildPort { } } ,
 		{ "/yxzh/fashion_port/get_fashion,/yxzh/furnace_port/get_info", new FashionPort { } } ,
 		{ "/yxzh/pyx_info", new PyxPort { } },
-		{ "active_port" , new ActivePort{} }
+		{ "active_port" , new ActivePort{} } ,
+		{ "/yxzh/title/get_title" , new TitlePort{} }
 	};
 	 
 

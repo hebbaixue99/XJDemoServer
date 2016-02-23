@@ -123,6 +123,7 @@
     <Compile Include="Script\Ports\FashionPort.cs" />
     <Compile Include="Script\Ports\PyxPort.cs" />
     <Compile Include="Script\Ports\ActivePort.cs" />
+    <Compile Include="Script\Ports\TitlePort.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -150,7 +150,7 @@ public static class ConfigHelper
 	}
 	public static void Main(string[] args)
 	{
-		string get_storage_card = ConfigHelper.GetAppConfig("get_user_new");
+		string get_storage_card = ConfigHelper.GetAppConfig("/yxzh/active_port/get_gm_active_all2");
 		get_storage_card=get_storage_card.Replace("'","\"");
 		 
 		ErlType[] et = StringKit.strToErlTypeArray (get_storage_card);

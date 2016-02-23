@@ -427,34 +427,53 @@ public class StringKit
 	}
 	public static ErlType[] listToErlTypeArray(List<Object> list )
 	{
-		ErlType[] et = new ErlType[list.Count];
+		ErlType[] et= new ErlType[list.Count ];
+		bool isList = false;
+		if (list.Count > 1) {
+			if (list [0].ToString () == "(erllist)") {
+				et = new ErlType[list.Count - 1];
+				isList = true;
+				list.RemoveAt (0);
+			}  
+		}// = new ErlType[list.Count];
+
 		//string[] strTypeArray = strType.Split(',');
 		int k = 0;
 		for (int i = 0; i < list.Count; i++) {
 			if (list [i].GetType ().Name.Contains ("List")) {
 				List<Object> tmpList = list [i] as List<Object>;
-				if (tmpList.Count > 0) {	
-					et [i] = new ErlArray (
-						listToErlTypeArray (tmpList));
+				if (tmpList.Count > 0) {
+					if (isList) {
+						tmpList.RemoveAt (0);
+						et [i] = new ErlList (listToErlTypeArray (tmpList));
+					} else {	
+						et [i] = new ErlArray (
+							listToErlTypeArray (tmpList));
+					}
 				} else {
 					et [i] = new ErlArray (new ErlType[0]);
 				}
 			} else {
 				string tmpstr = list [i].ToString ();
 				string tmpType = "string";
-				if (list [i].GetType ().Name.ToLower ().Contains ("int")) {
-					int count = StringKit.toInt (list [i].ToString ());
+				if (tmpstr == "(erllist)") {
+					isList = true;
+				} else {
+					
+					if (list [i].GetType ().Name.ToLower ().Contains ("int")) {
+						int count = StringKit.toInt (list [i].ToString ());
 
-					if (count < 255) {
-						tmpType = "byte";
-					} else {
-						tmpType = "int";
+						if (count < 255) {
+							tmpType = "byte";
+						} else {
+							tmpType = "int";
+						}
+					} else if (tmpstr.ToLower ().Contains ("(erlatom)")) {
+						tmpstr = tmpstr.Substring (0, tmpstr.Length - 9);
+						tmpType = "atom";
 					}
-				} else if(tmpstr.ToLower ().Contains("(erlatom)")) {
-					tmpstr = tmpstr.Substring (0, tmpstr.Length - 9);
-					tmpType = "atom";
+					et [i] = toErlType (tmpstr, tmpType);
 				}
-				et[i] = toErlType(tmpstr,tmpType);
 				k ++;
 			}
 

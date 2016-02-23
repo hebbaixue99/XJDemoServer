@@ -11,9 +11,9 @@ public class ActivePort:BaseFPort
 		string str = message.Cmd;
 		switch (str) {
 		case "/yxzh/active_port/get_active_info":
-			ErlArray eaa = message.getValue ("sid") as ErlArray;
-			String strValus = "";
-			if (eaa != null && eaa.Value.Length > 1) {
+			//ErlArray eaa = (message.getValue ("sid") as ErlType).getValueString ();
+			String strValus = (message.getValue ("sid") as ErlType).getValueString ();
+			if (strValus != null && strValus.Split(',').Length > 1) {
 				strValus = ConfigHelper.GetAppConfig (message.Cmd);
 			} else {
 				strValus = (message.getValue ("sid") as ErlType).getValueString ();
