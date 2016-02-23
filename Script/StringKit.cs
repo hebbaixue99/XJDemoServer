@@ -465,7 +465,8 @@ public class StringKit
 	public static void Main(string[] args)
 	{
 		Log.Info ("---------------");
-		String strValue = "[\"281629595547903\",\"蒲冰\",1,1,211060878,15215,\"281629599247928\",10533472,199,0,60,60,0,3,3,0,5,5,0,1,50,\"281629595533335\",\"名剑山庄\",0,0,0,0,0,0,0,\"1455784932990\",1,47190,41,[0],129276,126868,152,1429891200,18320,1396530,0,0,20,11776]]";
+		String strValue = "abc(erlatom)";
+		//strValue = ConfigHelper.GetAppConfig ("/yxzh/mail/get_mails");
 		String strType = "string,string,byte,byte,int,int,string,int,byte,byte,byte,byte,int,byte,byte,byte,byte,byte,byte,byte,byte,string,string,";
 		strType = strType+"byte,byte,byte,byte,byte,byte,byte,string,byte,int,byte,int,int,int,byte,int,int,int,byte,byte,byte,int";
 

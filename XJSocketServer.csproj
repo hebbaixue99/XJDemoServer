@@ -110,6 +110,19 @@
     <Compile Include="Script\BaseFPort.cs" />
     <Compile Include="Script\ClientPort.cs" />
     <Compile Include="Script\ConfigHelper.cs" />
+    <Compile Include="Script\Ports\LoginPort.cs" />
+    <Compile Include="Script\Ports\UserPort.cs" />
+    <Compile Include="Script\Ports\StoragePort.cs" />
+    <Compile Include="Script\Ports\FbPort.cs" />
+    <Compile Include="Script\Ports\GuidePort.cs" />
+    <Compile Include="Script\Ports\LabyrinthPort.cs" />
+    <Compile Include="Script\Ports\CashPort.cs" />
+    <Compile Include="Script\Ports\ArenaPort.cs" />
+    <Compile Include="Script\Ports\MailPort.cs" />
+    <Compile Include="Script\Ports\GuildPort.cs" />
+    <Compile Include="Script\Ports\FashionPort.cs" />
+    <Compile Include="Script\Ports\PyxPort.cs" />
+    <Compile Include="Script\Ports\ActivePort.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -138,6 +151,7 @@
     <Folder Include="Script\Server\" />
     <Folder Include="Script\Pool\" />
     <Folder Include="Script\Client\" />
+    <Folder Include="Script\Ports\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\AnimationOrTween\.DS_Store" />
