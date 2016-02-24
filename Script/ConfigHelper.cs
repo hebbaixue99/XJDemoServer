@@ -150,13 +150,17 @@ public static class ConfigHelper
 	}
 	public static void Main(string[] args)
 	{
-		string get_storage_card = ConfigHelper.GetAppConfig("/yxzh/active_port/get_gm_active_all2");
+		 string get_storage_card = ConfigHelper.GetAppConfig("/yxzh/active_port/get_gm_active_all2");
+		//get_storage_card = "['(clist)']";
 		get_storage_card=get_storage_card.Replace("'","\"");
 		 
 		ErlType[] et = StringKit.strToErlTypeArray (get_storage_card);
 		//ErlType[] et = StringKit.strToErlTypeArray ("[[[1,1,1],[1,1]],[1],[1]]", "[[[\"int\",\"int\",\"byte\"],[\"byte\",\"int\"]],[\"int\"],[\"byte\"]]");
 			ErlArray ea = new ErlArray (et);
 			Log.Info (ea.getValueString());
-
+       
+		 
+		 
+		 
 	}
 }

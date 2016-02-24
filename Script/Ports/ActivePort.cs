@@ -44,6 +44,7 @@ public class ActivePort:BaseFPort
 				ErlArray ea = new ErlArray (et); 
 				msg.addValue ("msg", ea);
 				base.send (this.erlConnect, msg);
+				Log.Debug (msg.toJsonString ());
 
 			}
 			break;

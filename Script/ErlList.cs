@@ -44,15 +44,18 @@ public class ErlList : ErlType
         else
         {
             data.writeByte(0x6c);
-            data.writeInt(this._value.Length);
+			//if (!this.isServer) {
+				data.writeInt(this._value.Length);
+			//}
+           
             for (int i = 0; i < this._value.Length; i++)
             {
-                ErlBytesWriter writer = this._value[i];
+				ErlType writer = this._value[i];
                 if (writer == null)
                 {
                     writer = new ErlNullList();
                 }
-                writer.bytesWrite(data);
+				writer.bytesWriteServer(data);
             }
             new ErlNullList().bytesWrite(data);
         }
@@ -238,5 +241,6 @@ public class ErlList : ErlType
             this._value = value;
         }
     }
+
 }
 

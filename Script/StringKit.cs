@@ -398,6 +398,18 @@ public class StringKit
 			return new ErlInt (toInt (strValue));
 		case "double":
 			return new ErlDouble (toLong(strValue));
+		case "clist":
+			if (strValue.Length > 0) {
+				char[] c = strValue.ToCharArray ();
+				ErlInt[] eb = new ErlInt[c.Length];
+				for (int i = 0; i < c.Length; i++) {
+					eb [i] = new ErlInt (c [i]);
+				}
+				ErlList el = new ErlList (eb);
+				return el;
+			}
+			return new ErlNullList();
+			 
 		default :
 			if (strType.Length>5&&strType.Substring (0, 4) == "list") {
 				string tmpValue = strValue.Substring (1, strValue.Length - 2);
@@ -429,7 +441,7 @@ public class StringKit
 	{
 		ErlType[] et= new ErlType[list.Count ];
 		bool isList = false;
-		if (list.Count > 1) {
+		if (list.Count > 0) {
 			if (list [0].ToString () == "(erllist)") {
 				et = new ErlType[list.Count - 1];
 				isList = true;
@@ -443,12 +455,16 @@ public class StringKit
 			if (list [i].GetType ().Name.Contains ("List")) {
 				List<Object> tmpList = list [i] as List<Object>;
 				if (tmpList.Count > 0) {
-					if (isList) {
+					if (tmpList [0].ToString () == "(erlist)") {
 						tmpList.RemoveAt (0);
 						et [i] = new ErlList (listToErlTypeArray (tmpList));
-					} else {	
-						et [i] = new ErlArray (
-							listToErlTypeArray (tmpList));
+					} else {
+						if (isList) {
+							et [i] = new ErlList (listToErlTypeArray (tmpList));
+						} else {	
+							et [i] = new ErlArray (
+								listToErlTypeArray (tmpList));
+						}
 					}
 				} else {
 					et [i] = new ErlArray (new ErlType[0]);
@@ -471,8 +487,14 @@ public class StringKit
 					} else if (tmpstr.ToLower ().Contains ("(erlatom)")) {
 						tmpstr = tmpstr.Substring (0, tmpstr.Length - 9);
 						tmpType = "atom";
-					}
-					et [i] = toErlType (tmpstr, tmpType);
+					} else 
+					if (tmpstr.ToLower ().Contains ("(clist)")) {
+							tmpstr = tmpstr.Substring (0, tmpstr.Length - 7);
+							tmpType = "clist";
+					}  
+						et [i] = toErlType (tmpstr, tmpType);
+					 
+					 
 				}
 				k ++;
 			}
@@ -480,7 +502,17 @@ public class StringKit
 		}
 		return et;
 	}
-
+	 
+	public static bool isChiness(String text)
+	{
+		char[] c = text.ToCharArray();
+		for (int i = 0; i < c.Length; i++) {
+			if (c [i] >= 0x4e00 && c [i] <= 0x9fbb)
+				return true;
+			 
+		}
+		return false;
+	}
 	public static void Main(string[] args)
 	{
 		Log.Info ("---------------");
