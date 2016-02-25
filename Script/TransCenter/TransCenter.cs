@@ -115,17 +115,19 @@ public class TransCenter
 	private static bool transToTargetData(TransCenterSockets tcs)
 	{
 		Log.Info (tcs.socketClient.Available);
+
 		ByteBuffer data = new ByteBuffer(tcs.socketClient.Available);
 		data.setTop(tcs.socketClient.Available);
 		tcs.socketClient.Receive(data.getArray(), SocketFlags.None);
-		tcs.socketServer.Send (data.getArray ());
-		data.position = 0;
 		try{
-			Socket c = tcs.socketClient;
-			tcs.transPortClient.receive (data,true);
+		tcs.transPortClient.receive(data,true);
+		data.position = 0;
+		tcs.transPortServer.receive(data,true);
 		}catch(Exception e) {
 			Log.Error (e.Message);
 		}
+		data.position = 0;
+		tcs.socketServer.Send (data.getArray ());
 		return false;
 	}
 	private static bool transToClientData(TransCenterSockets tcs)
@@ -135,7 +137,9 @@ public class TransCenter
 		data.setTop(tcs.socketServer.Available);
 		tcs.socketServer.Receive(data.getArray(), SocketFlags.None);
 		try{
-		tcs.transPortClient.receive (data,true);
+			tcs.transPortClient.receive(data,false);
+			data.position=0;
+			tcs.transPortServer.receive(data,false);
 		}catch(Exception e) {
 			Log.Error (e.Message);
 		}

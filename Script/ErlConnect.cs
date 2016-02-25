@@ -20,6 +20,20 @@ public class ErlConnect : Connect
 	private const int RAND_MASK = 0x75bd924;
 	private const int RAND_Q = 0x1f31d;
 	public const int VERSION = 0;
+	private ByteBuffer _dataBuffer ;
+	public ByteBuffer dataBuffer{
+		get {
+			return _dataBuffer;
+		}
+		set {
+			int len = _dataBuffer.top - _dataBuffer.position ;
+			byte[] tmp = new byte[len+value.top];
+			_dataBuffer.readBytes (tmp, 0, len);
+			value.readBytes(tmp, len , value.top);
+			_dataBuffer.clear ();
+			_dataBuffer.writeBytes (tmp);
+		}
+	}
 
 	public void close ()
 	{
@@ -124,7 +138,7 @@ public class ErlConnect : Connect
 		}
 	}
 
-	public void TransParseMessage (ByteBuffer socketbuffer , bool isServer)
+	public void TransParseMessage (ByteBuffer socketbuffer , bool isServer , ByteBuffer src)
 	{
 		int num = socketbuffer.readByte ();
 		bool flag = (num & 8) != 0;
@@ -132,10 +146,10 @@ public class ErlConnect : Connect
 		bool flag3 = (num & 2) != 0;
 		ByteBuffer data = new ByteBuffer (this.length - 1);
 		data.write (socketbuffer.toArray (), 0, this.length - 1);
-		if ((data.top-data.position) >= 2) {
+		if ((src.top-src.position) >= 2) {
 			byte[] buffer = new byte[2];
 			//base.socket.Receive (buffer, SocketFlags.None);
-			data.readBytes(buffer,0,2);
+			src.readBytes(buffer,0,2);
 			this.length = ByteKit.readUnsignedShort (buffer, 0);
 		} else {
 			this.length = 0;
@@ -229,7 +243,7 @@ public class ErlConnect : Connect
 					socketbuffer.setTop (this.length);
 					data.readBytes (socketbuffer.getArray (), 0, this.length);
 					//base.socket.Receive (socketbuffer.getArray (), SocketFlags.None);
-					this.TransParseMessage (socketbuffer, isServer);
+					this.TransParseMessage (socketbuffer, isServer,data);
 				}
 			}
 		} 

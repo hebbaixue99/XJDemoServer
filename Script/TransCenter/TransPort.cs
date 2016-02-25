@@ -22,13 +22,13 @@ public class TransPort : BaseFPort
 
 	public void receive (ByteBuffer data, bool isServer)
 	{
-		//base.erlConnect.TransReceive (data, isServer);
-		base.erlConnect.receive();
+		base.erlConnect.TransReceive (data, isServer);
+		//base.erlConnect.receive();
 	}
 
 	public override void erlReceive (Connect connect, ErlKVMessage message)
 	{
-		this.readMessage (message);
+		//this.readMessage (message);
 
 		Log.Info(message.toJsonString());
 	}
