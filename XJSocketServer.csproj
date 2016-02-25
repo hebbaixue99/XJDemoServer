@@ -7,11 +7,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>XJSocketServer</RootNamespace>
     <AssemblyName>XJSocketServer</AssemblyName>
-    <StartupObject>SocketServerBase</StartupObject>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <StartupObject>TransCenter</StartupObject>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <CodePage>65001</CodePage>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -124,24 +124,26 @@
     <Compile Include="Script\Ports\PyxPort.cs" />
     <Compile Include="Script\Ports\ActivePort.cs" />
     <Compile Include="Script\Ports\TitlePort.cs" />
+    <Compile Include="Script\TransCenter\TransCenter.cs" />
+    <Compile Include="Script\TransCenter\TransPort.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Net" />
     <Reference Include="LitJson">
-      <HintPath>..\XJDemoServer\Assets\Plugins\LitJson.dll</HintPath>
+      <HintPath>Plugins\LitJson.dll</HintPath>
     </Reference>
     <Reference Include="NLog">
-      <HintPath>..\XJDemoServer\Assets\Plugins\NLog.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>Plugins\NLog.dll</HintPath>
     </Reference>
     <Reference Include="zlib.net">
-      <HintPath>..\XJDemoServer\Assets\Plugins\zlib.net.dll</HintPath>
+      <HintPath>Plugins\zlib.net.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Script\" />
@@ -153,6 +155,7 @@
     <Folder Include="Script\Pool\" />
     <Folder Include="Script\Client\" />
     <Folder Include="Script\Ports\" />
+    <Folder Include="Script\TransCenter\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\AnimationOrTween\.DS_Store" />

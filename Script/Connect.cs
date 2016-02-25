@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
- 
+using NLog;
 
 public class Connect : IDisposable
 {
@@ -23,7 +23,7 @@ public class Connect : IDisposable
     public Socket socket;
     public const int TIMEOUT = 0x2bf20;
     private Timer timer;
-
+	public static readonly Logger Log = NLog.LogManager.GetCurrentClassLogger ();
     private void connectFail()
     {
         this.socket.Close();

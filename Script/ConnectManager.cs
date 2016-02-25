@@ -23,6 +23,14 @@ public class ConnectManager
 		connect.socket.Send (b);
 		return connect;
 	}
+	public Connect transBeginConnect(Socket _socket)
+	{
+		ErlConnect connect = new ErlConnect();
+		connect.socket = _socket;
+		//byte[] b = connect.getCode ();
+		//connect.socket.Send (b);
+		return connect;
+	}
 
     public void closeAllConnects()
     {
