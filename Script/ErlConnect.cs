@@ -20,18 +20,27 @@ public class ErlConnect : Connect
 	private const int RAND_MASK = 0x75bd924;
 	private const int RAND_Q = 0x1f31d;
 	public const int VERSION = 0;
+	public CallBack transCallBack = null ;
+
 	private ByteBuffer _dataBuffer ;
 	public ByteBuffer dataBuffer{
 		get {
 			return _dataBuffer;
 		}
 		set {
-			int len = _dataBuffer.top - _dataBuffer.position ;
-			byte[] tmp = new byte[len+value.top];
-			_dataBuffer.readBytes (tmp, 0, len);
-			value.readBytes(tmp, len , value.top);
-			_dataBuffer.clear ();
-			_dataBuffer.writeBytes (tmp);
+			int len = 0;
+			if (_dataBuffer != null) {
+				len = _dataBuffer.top - _dataBuffer.position;
+				byte[] tmp = new byte[len + value.top];
+				_dataBuffer.readBytes (tmp, 0, len);
+				value.readBytes (tmp, len, value.top);
+				_dataBuffer= new ByteBuffer(tmp);
+			} else {
+				byte[] tmp = new byte[value.top]; 
+				value.readBytes (tmp, len, value.top);
+				_dataBuffer= new ByteBuffer(tmp);
+			}
+
 		}
 	}
 
@@ -146,10 +155,10 @@ public class ErlConnect : Connect
 		bool flag3 = (num & 2) != 0;
 		ByteBuffer data = new ByteBuffer (this.length - 1);
 		data.write (socketbuffer.toArray (), 0, this.length - 1);
-		if ((src.top-src.position) >= 2) {
+		if ((this.dataBuffer.top-this.dataBuffer.position) >= 2) {
 			byte[] buffer = new byte[2];
 			//base.socket.Receive (buffer, SocketFlags.None);
-			src.readBytes(buffer,0,2);
+			this.dataBuffer.readBytes(buffer,0,2);
 			this.length = ByteKit.readUnsignedShort (buffer, 0);
 		} else {
 			this.length = 0;
@@ -172,13 +181,25 @@ public class ErlConnect : Connect
 			if (num2 != num3) {
 				//MonoBehaviour.print(string.Concat(new object[] { "crc is err,crcValue", num2, ",nowCrc=", num3 }));
 				// Log.info
+				//if (this.transCallBack != null) {
+				//	this.transCallBack.Invoke ();
+			//	}
 				return;
 			}
 		}
-		ErlKVMessage message = new ErlKVMessage (null);
-		message.bytesRead (data);
-		if (base._portHandler != null) {
-			base._portHandler.erlReceive (this, message);
+		//if (isServer) {
+			ErlKVMessage message = new ErlKVMessage (null);
+			message.bytesRead (data);
+		   //Log.Info ("+++++111111111---111111+++++++++++");
+			if (base._portHandler != null) {
+				base._portHandler.erlReceive (this, message);
+			//}
+		//} else {
+		//	ErlKVMessageClient messageClient = new ErlKVMessageClient (null);
+	//		messageClient.bytesRead (data);
+	//		if (base._portHandler != null) {
+		//		base._portHandler.erlReceive (this, messageClient);
+		//	}
 		}
 	}
 
@@ -196,30 +217,30 @@ public class ErlConnect : Connect
 		return new byte[]{ 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9 };
 	}
 
-	public  void TransReceive (ByteBuffer data , bool isServer)
+	public  void TransReceive (ByteBuffer data , bool isServer  )
 	{	 
 		base.ActiveTime = TimeKit.getMillisTime ();
-		if (data.top > 0) {
+		if (this.dataBuffer.top > 0) {
 			if (!this._isConnectReady) {
 				byte[] buffer = new byte[1];
 				//base.socket.Receive (buffer, SocketFlags.None);
-				Log.Info (data.position);
-				data.readBytes(buffer,0,1);
+				Log.Info (this.dataBuffer.position);
+				this.dataBuffer.readBytes(buffer,0,1);
 
 				byte[] buffer2 = new byte[1];
-				Log.Info (data.position);
-				data.readBytes (buffer2,0, 1);
+				Log.Info (this.dataBuffer.position);
+				this.dataBuffer.readBytes (buffer2,0, 1);
 				//base.socket.Receive (buffer2, SocketFlags.None);
 				byte[] buffer3 = new byte[4];
-				Log.Info (data.position);
+				Log.Info (this.dataBuffer.position);
 				//data.bytesRead ();
-				data.readBytes (buffer3,0, 4);
+				this.dataBuffer.readBytes (buffer3,0, 4);
 				//base.socket.Receive (buffer3, SocketFlags.None);
 				Array.Reverse (buffer3);
 				int seed = BitConverter.ToInt32 (buffer3, 0);
 				byte[] buffer4 = new byte[4];
-				Log.Info (data.position);
-				data.readBytes (buffer4, 0, 4);
+				Log.Info (this.dataBuffer.position);
+				this.dataBuffer.readBytes (buffer4, 0, 4);
 				//base.socket.Receive (buffer4, SocketFlags.None);
 				Array.Reverse (buffer4);
 				int num2 = BitConverter.ToInt32 (buffer4, 0);
@@ -229,19 +250,26 @@ public class ErlConnect : Connect
 				if (base.CallBack != null) {
 					base.CallBack ();
 				}
+				if (this.transCallBack != null) {
+					this.transCallBack.Invoke ();
+				}
+
 			} else {
 				if (this.length <= 0) {
-					if ((data.top-data.position) < 2) {
+					if ((this.dataBuffer.top-this.dataBuffer.position) < 2) {
+						if (this.transCallBack != null) {
+							this.transCallBack.Invoke ();
+						}
 						return;
 					}
 					byte[] buffer5 = new byte[2];
-					data.readBytes(buffer5, 0,2);
+					this.dataBuffer.readBytes(buffer5, 0,2);
 					this.length = ByteKit.readUnsignedShort (buffer5, 0);
 				}
-				if ((this.length > 0) && ((data.top-data.position) >= this.length)) {
+				if ((this.length > 0) && ((this.dataBuffer.top-this.dataBuffer.position) >= this.length)) {
 					ByteBuffer socketbuffer = new ByteBuffer (this.length);
 					socketbuffer.setTop (this.length);
-					data.readBytes (socketbuffer.getArray (), 0, this.length);
+					this.dataBuffer.readBytes (socketbuffer.getArray (), 0, this.length);
 					//base.socket.Receive (socketbuffer.getArray (), SocketFlags.None);
 					this.TransParseMessage (socketbuffer, isServer,data);
 				}

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -46,7 +46,6 @@
     <Compile Include="Script\ConnectManager.cs" />
     <Compile Include="Script\TimeKit.cs" />
     <Compile Include="Script\Connect.cs" />
-    <Compile Include="Script\BetterList!1.cs" />
     <Compile Include="Script\ByteBuffer.cs" />
     <Compile Include="Script\ByteReader.cs" />
     <Compile Include="Script\StringExpression.cs" />
@@ -108,6 +107,7 @@
     <Compile Include="Script\Server\SocketServerBase.cs" />
     <Compile Include="Script\Client\SocketClientDemo.cs" />
     <Compile Include="Script\BaseFPort.cs" />
+    <Compile Include="Script\BetterList!1.cs" />
     <Compile Include="Script\ClientPort.cs" />
     <Compile Include="Script\ConfigHelper.cs" />
     <Compile Include="Script\Ports\LoginPort.cs" />
@@ -126,6 +126,8 @@
     <Compile Include="Script\Ports\TitlePort.cs" />
     <Compile Include="Script\TransCenter\TransCenter.cs" />
     <Compile Include="Script\TransCenter\TransPort.cs" />
+    <Compile Include="Script\ByteKitClient.cs" />
+    <Compile Include="Script\ErlKVMessageClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -163,7 +165,6 @@
     <None Include="Plugins\NLog.dll" />
     <None Include="Plugins\NLog.xml" />
     <None Include="Plugins\zlib.net.dll" />
-    <None Include="Plugins\nlog.dll.nlog" />
     <None Include="App.config" />
   </ItemGroup>
 </Project>

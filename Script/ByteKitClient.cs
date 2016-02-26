@@ -1,8 +1,8 @@
 ﻿using System;
 
-public class ByteKitClient
+public class ByteKit
 {
-	private ByteKitClient()
+	private ByteKit()
 	{
 	}
 

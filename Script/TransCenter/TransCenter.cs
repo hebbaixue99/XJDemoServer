@@ -13,16 +13,20 @@ public class TransCenter
 	public static string targetIP = "123.59.34.161";
 	public static int targetPort = 7612;
 	public static Socket transCenterServerSocket;
+	public static int ports = 0 ;
+	public delegate int AddHandler();
 
 	public TransCenter ()
 	{
 	}
+
 	private void initConfig ()
 	{
 		transCenterPort = StringKit.toInt (ConfigHelper.GetAppConfig ("transCenterPort"));
 		targetIP = ConfigHelper.GetAppConfig ("targetIP");
 		targetPort = StringKit.toInt (ConfigHelper.GetAppConfig ("targetPort"));
 	}
+
 	public static void Main (string[] args)
 	{
 		Log.IsEnabled (LogLevel.Debug);
@@ -35,9 +39,10 @@ public class TransCenter
 		Log.Info ("启动监听{0}成功", transCenterServerSocket.LocalEndPoint.ToString ());  
 		//通过Clientsoket发送数据  
 		Thread ListenClientThread = new Thread (ListenClientConnect);  
-		ListenClientThread.Start(transCenterServerSocket);  
+		ListenClientThread.Start (transCenterServerSocket);  
 
 	}
+
 	/// <summary>  
 	/// 监听客户端连接  
 	/// </summary>  
@@ -52,17 +57,20 @@ public class TransCenter
 			receiveClientThread.Start (tcs);  
 		}  
 	}
+
 	/// <summary>  
 	/// 接收消息  
 	/// </summary>  
 	/// <param name="clientSocket"></param>  
 	private static void ReceiveMessage (object transCenterSockets)
 	{  
-		TransCenterSockets tcs = (TransCenterSockets)transCenterSockets ;
+		TransCenterSockets tcs = (TransCenterSockets)transCenterSockets;
 		//接收到新的客户端连接后，建立到远程服务器的连接
-		Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-		IPEndPoint _point = new IPEndPoint(Dns.GetHostAddresses(targetIP)[0], targetPort);
-		WaitCallback callback = delegate { toTargetSuccess ((TransCenterSockets)tcs); };
+		Socket _socket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+		IPEndPoint _point = new IPEndPoint (Dns.GetHostAddresses (targetIP) [0], targetPort);
+		WaitCallback callback = delegate {
+			toTargetSuccess ((TransCenterSockets)tcs);
+		};
 		tcs.socketServer = _socket;
 		tcs.socketServer.BeginConnect (_point, new AsyncCallback (callback), tcs.socketClient);
 
@@ -72,11 +80,11 @@ public class TransCenter
 			try {  
 				//通过clientSocket接收数据  
 
-				if ( tcs.socketClient.Available > 0) {
+				if (tcs.socketClient.Available > 0) {
 					//clientPort.receive ();
-					transToTargetData(tcs);
+					transToTargetData (tcs);
 				} 
-				Thread.Sleep(1);
+				Thread.Sleep (1000);
 			} catch (Exception ex) {  
 				Console.WriteLine (ex.Message);  
 				tcs.socketClient.Shutdown (SocketShutdown.Both);  
@@ -93,15 +101,15 @@ public class TransCenter
 	/// <param name="clientSocket"></param>  
 	private static void ReceiveServerMessage (object transCenterSockets)
 	{  
-		TransCenterSockets tcs = (TransCenterSockets)transCenterSockets ;
+		TransCenterSockets tcs = (TransCenterSockets)transCenterSockets;
 		while (true) {  
 			try {  
 				//通过clientSocket接收数据  
-				if ( tcs.socketServer.Available > 0) {
+				if (tcs.socketServer.Available > 0) {
 					//clientPort.receive ();
-					transToClientData(tcs);
+					transToClientData (tcs);
 				} 
-				Thread.Sleep(1);
+				Thread.Sleep (1000);
 			} catch (Exception ex) {  
 				Console.WriteLine (ex.Message);  
 				tcs.socketServer.Shutdown (SocketShutdown.Both);  
@@ -112,48 +120,81 @@ public class TransCenter
 
 	}
 
-	private static bool transToTargetData(TransCenterSockets tcs)
+	private static bool transToTargetData (TransCenterSockets tcs)
 	{
 		Log.Info (tcs.socketClient.Available);
 
-		ByteBuffer data = new ByteBuffer(tcs.socketClient.Available);
-		data.setTop(tcs.socketClient.Available);
-		tcs.socketClient.Receive(data.getArray(), SocketFlags.None);
-		try{
-		tcs.transPortClient.receive(data,true);
-		data.position = 0;
-		tcs.transPortServer.receive(data,true);
-		}catch(Exception e) {
+		ByteBuffer data = new ByteBuffer (tcs.socketClient.Available);
+		data.setTop (tcs.socketClient.Available);
+		tcs.socketClient.Receive (data.getArray (), SocketFlags.None);
+		tcs.transPortServer.isServer = true;
+		try {
+			tcs.transPortServer.dataBuffer = data.Clone() as ByteBuffer;
+			tcs.transPortServer.receive (data, true);
+			if (data.length() == 10) {
+				data.position = 0;
+				tcs.transPortClient.dataBuffer = data.Clone() as ByteBuffer;
+				tcs.transPortClient.receive (data, true);
+			}
+		
+		} catch (Exception e) {
 			Log.Error (e.Message);
 		}
 		data.position = 0;
 		tcs.socketServer.Send (data.getArray ());
 		return false;
 	}
-	private static bool transToClientData(TransCenterSockets tcs)
+
+	private static bool transToClientData (TransCenterSockets tcs)
 	{
 		Log.Info (tcs.socketServer.Available);
-		ByteBuffer data = new ByteBuffer(tcs.socketServer.Available);
-		data.setTop(tcs.socketServer.Available);
-		tcs.socketServer.Receive(data.getArray(), SocketFlags.None);
-		try{
-			tcs.transPortClient.receive(data,false);
-			data.position=0;
-			tcs.transPortServer.receive(data,false);
-		}catch(Exception e) {
+		ports++;
+		ByteBuffer data = new ByteBuffer (tcs.socketServer.Available);
+		data.setTop (tcs.socketServer.Available);
+		tcs.socketServer.Receive (data.getArray (), SocketFlags.None);
+		tcs.transPortClient.isSend = false;
+		tcs.transPortClient.isServer = false;
+		try {
+			/*if (TransPort.messagePort!=0)
+			{
+				tcs.transPortClient.sendUser();
+				TransPort.messagePort=0;
+			}*/
+			CallBack cb = delegate {
+				data.position = 0;
+				tcs.socketClient.Send (data.getArray ());
+			};
+			    tcs.transPortClient.erlConnect.transCallBack = cb  ; 
+				tcs.transPortClient.dataBuffer = data.Clone() as ByteBuffer;
+			    tcs.transPortClient.receive (data, false);
+			 
+				if (data.length() == 10) {
+					data.position = 0;
+					tcs.transPortServer.dataBuffer = data.Clone() as ByteBuffer;
+					tcs.transPortServer.receive (data, false);
+				}
+				 
+
+		} catch (Exception e) {
 			Log.Error (e.Message);
 		}
-		data.position = 0;
-		tcs.socketClient.Send (data.getArray ());
+		finally{
+			
+			//Log.Info ("+++++" + ports + "+++++++++++");
+			//if (ports!=5) {
+				
+			//}
+		}
 		return false;
 	}
-	private static void toTargetSuccess(TransCenterSockets tcs)
+
+	private static void toTargetSuccess (TransCenterSockets tcs)
 	{
 		//TransCenterSockets tcs = new TransCenterSockets ();
 		//tcs.socketClient = clientSocket;
 		Thread receiveServerThread = new Thread (ReceiveServerMessage);  
 		receiveServerThread.Start (tcs);  
-		Log.Info ("建立到远程服务器的连接[{0}-->{1}]",tcs.socketServer.LocalEndPoint.ToString(),tcs.socketServer.RemoteEndPoint.ToString());
+		Log.Info ("建立到远程服务器的连接[{0}-->{1}]", tcs.socketServer.LocalEndPoint.ToString (), tcs.socketServer.RemoteEndPoint.ToString ());
 	}
 
 
@@ -174,7 +215,7 @@ public class TransCenter
 			set {
 				_socketServer = value;
 				ErlConnect erlConnect = ConnectManager.manager ().transBeginConnect (_socketServer) as ErlConnect;
-				TransPort  transPort = new TransPort (erlConnect);
+				TransPort transPort = new TransPort (erlConnect);
 				transPortServer = transPort;
 			}  
 		}
@@ -184,10 +225,11 @@ public class TransCenter
 			set { 
 				_socketClient = value;
 				ErlConnect erlConnect = ConnectManager.manager ().transBeginConnect (_socketClient) as ErlConnect;
-				TransPort  transPort = new TransPort (erlConnect);
+				TransPort transPort = new TransPort (erlConnect);
 				transPortClient = transPort;
 			}  
 		}
+
 		public TransPort transPortServer {  
 			get { return _transPortServer; }  
 			set { _transPortServer = value; }  
