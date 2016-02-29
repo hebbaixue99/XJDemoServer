@@ -20,6 +20,7 @@ public class ErlConnect : Connect
 	private const int RAND_MASK = 0x75bd924;
 	private const int RAND_Q = 0x1f31d;
 	public const int VERSION = 0;
+	public bool isServer = false;
 	public CallBack transCallBack = null ;
 
 	private ByteBuffer _dataBuffer ;
@@ -30,7 +31,7 @@ public class ErlConnect : Connect
 		set {
 			int len = 0;
 			if (_dataBuffer != null) {
-				len = _dataBuffer.top - _dataBuffer.position;
+				len = _dataBuffer.top;
 				byte[] tmp = new byte[len + value.top];
 				_dataBuffer.readBytes (tmp, 0, len);
 				value.readBytes (tmp, len, value.top);
@@ -149,13 +150,14 @@ public class ErlConnect : Connect
 
 	public void TransParseMessage (ByteBuffer socketbuffer , bool isServer , ByteBuffer src)
 	{
+		try{
 		int num = socketbuffer.readByte ();
 		bool flag = (num & 8) != 0;
 		bool flag2 = (num & 4) != 0;
 		bool flag3 = (num & 2) != 0;
 		ByteBuffer data = new ByteBuffer (this.length - 1);
 		data.write (socketbuffer.toArray (), 0, this.length - 1);
-		if ((this.dataBuffer.top-this.dataBuffer.position) >= 2) {
+		if ((this.dataBuffer.bytesAvailable) >= 2) {
 			byte[] buffer = new byte[2];
 			//base.socket.Receive (buffer, SocketFlags.None);
 			this.dataBuffer.readBytes(buffer,0,2);
@@ -164,10 +166,10 @@ public class ErlConnect : Connect
 			this.length = 0;
 		}
 		if (flag) {
-			if (!isServer) {
-				data = this.encryptionCode (data, this._receiveChallengeCode);
-			} else {
+			if (this.isServer) {
 				data = this.encryptionCode (data, this._sendChallengeCode);
+			} else {
+				data = this.encryptionCode (data, this._receiveChallengeCode);
 			}
 		}
 		if (flag3) {
@@ -176,30 +178,69 @@ public class ErlConnect : Connect
 		if (flag2) {
 			int num2 = data.readInt ();
 			ByteBuffer buffer4 = new ByteBuffer ();
-			buffer4.writeBytes (data.toArray (), 0, data.top - data.position);
+			buffer4.writeBytes (data.toArray (), 0, (int)data.bytesAvailable);
 			int num3 = (int)ChecksumUtil.Adler32 (buffer4);
 			if (num2 != num3) {
-				//MonoBehaviour.print(string.Concat(new object[] { "crc is err,crcValue", num2, ",nowCrc=", num3 }));
+				Log.Error(string.Concat(new object[] { "crc is err,crcValue", num2, ",nowCrc=", num3 }));
 				// Log.info
 				//if (this.transCallBack != null) {
 				//	this.transCallBack.Invoke ();
 			//	}
+					int len = (int)this.dataBuffer.bytesAvailable;
+					int pos = this.dataBuffer.position;
+
+					byte[] tmp = new byte[len];
+					byte[] bak = new byte[pos];
+
+					this.dataBuffer.position = 0;
+					this.dataBuffer.readBytes (bak, 0, pos);
+					this.dataBuffer.readBytes (tmp, 0, len);
+					this.dataBuffer.clear ();
+					this.dataBuffer = new ByteBuffer (tmp);
+					if(!this.isServer){
+						base.socket.Send (bak);}
+
+					if (this.dataBuffer.bytesAvailable > 0) {
+						this.TransReceive (null, this.isServer);
+					}
+
 				return;
 			}
 		}
-		//if (isServer) {
+	 
 			ErlKVMessage message = new ErlKVMessage (null);
 			message.bytesRead (data);
-		   //Log.Info ("+++++111111111---111111+++++++++++");
+ 
 			if (base._portHandler != null) {
 				base._portHandler.erlReceive (this, message);
-			//}
-		//} else {
-		//	ErlKVMessageClient messageClient = new ErlKVMessageClient (null);
-	//		messageClient.bytesRead (data);
-	//		if (base._portHandler != null) {
-		//		base._portHandler.erlReceive (this, messageClient);
-		//	}
+		 
+		}
+		}
+		catch(Exception e) {
+			Log.Error (e.Message);
+			if (this.dataBuffer.bytesAvailable > 0) {
+				this.TransReceive (null, this.isServer);
+			} else {
+				int len = (int)this.dataBuffer.bytesAvailable;
+				int pos = this.dataBuffer.position;
+
+				byte[] tmp = new byte[len];
+				byte[] bak = new byte[pos];
+
+				this.dataBuffer.position = 0;
+				this.dataBuffer.readBytes (bak, 0, pos);
+				this.dataBuffer.readBytes (tmp, 0, len);
+				this.dataBuffer.clear ();
+				this.dataBuffer = new ByteBuffer (tmp);
+				if (!this.isServer) {
+					base.socket.Send (bak);
+				}
+
+				if (this.dataBuffer.bytesAvailable > 0) {
+					this.TransReceive (null, this.isServer);
+				}
+
+			}
 		}
 	}
 
@@ -247,8 +288,21 @@ public class ErlConnect : Connect
 				this._sendChallengeCode = this.getPK (seed);
 				this._receiveChallengeCode = this.getPK (num2);
 				this._isConnectReady = true;
-				if (base.CallBack != null) {
+				/*if (base.CallBack != null) {
 					base.CallBack ();
+				}*/
+				if (this.dataBuffer.bytesAvailable > 0) {
+					this.TransReceive  (null, this.isServer);
+				} else {
+					int len = this.dataBuffer.position;
+					byte[] tmp = new byte[len];
+					this.dataBuffer.position = 0;
+					this.dataBuffer.readBytes (tmp, 0, len);
+					if (!this.isServer) {
+						this.socket.Send (tmp);
+					}
+					this.dataBuffer.clear ();
+					 
 				}
 				if (this.transCallBack != null) {
 					this.transCallBack.Invoke ();
@@ -256,7 +310,7 @@ public class ErlConnect : Connect
 
 			} else {
 				if (this.length <= 0) {
-					if ((this.dataBuffer.top-this.dataBuffer.position) < 2) {
+					if ((this.dataBuffer.bytesAvailable) < 2) {
 						if (this.transCallBack != null) {
 							this.transCallBack.Invoke ();
 						}
@@ -266,7 +320,7 @@ public class ErlConnect : Connect
 					this.dataBuffer.readBytes(buffer5, 0,2);
 					this.length = ByteKit.readUnsignedShort (buffer5, 0);
 				}
-				if ((this.length > 0) && ((this.dataBuffer.top-this.dataBuffer.position) >= this.length)) {
+				if ((this.length > 0) && ((this.dataBuffer.bytesAvailable) >= this.length)) {
 					ByteBuffer socketbuffer = new ByteBuffer (this.length);
 					socketbuffer.setTop (this.length);
 					this.dataBuffer.readBytes (socketbuffer.getArray (), 0, this.length);

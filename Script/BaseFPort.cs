@@ -74,6 +74,17 @@ public class BaseFPort:PortHandler
 	{
 		ConnectManager.manager().sendMessage(this._host, this._port, message, null, null);
 	}
+	public bool isServer
+	{
+		get
+		{
+			return this._erlConnect.isServer;
+		}
+		set
+		{
+			this._erlConnect.isServer = value;
+		}
+	}
 	public ErlConnect erlConnect
 	{
 		get

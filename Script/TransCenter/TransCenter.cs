@@ -84,7 +84,7 @@ public class TransCenter
 					//clientPort.receive ();
 					transToTargetData (tcs);
 				} 
-				Thread.Sleep (1000);
+				Thread.Sleep (2);
 			} catch (Exception ex) {  
 				Console.WriteLine (ex.Message);  
 				tcs.socketClient.Shutdown (SocketShutdown.Both);  
@@ -109,9 +109,9 @@ public class TransCenter
 					//clientPort.receive ();
 					transToClientData (tcs);
 				} 
-				Thread.Sleep (1000);
+				Thread.Sleep (2);
 			} catch (Exception ex) {  
-				Console.WriteLine (ex.Message);  
+				Log.Error (ex.Message);  
 				tcs.socketServer.Shutdown (SocketShutdown.Both);  
 				tcs.socketServer.Close ();  
 				break;  
@@ -119,59 +119,56 @@ public class TransCenter
 		} 
 
 	}
-
+	public static string getSocketStr( Socket sk)
+	{
+		if (sk == null) {
+			return "[]";
+		}
+		return "["+sk.LocalEndPoint.ToString () + "->" + sk.RemoteEndPoint.ToString ()+"]";
+	}
 	private static bool transToTargetData (TransCenterSockets tcs)
 	{
-		Log.Info (tcs.socketClient.Available);
-
+		Log.Info (getSocketStr(tcs.socketClient) + tcs.socketClient.Available);
 		ByteBuffer data = new ByteBuffer (tcs.socketClient.Available);
 		data.setTop (tcs.socketClient.Available);
 		tcs.socketClient.Receive (data.getArray (), SocketFlags.None);
 		tcs.transPortServer.isServer = true;
+
 		try {
 			tcs.transPortServer.dataBuffer = data.Clone() as ByteBuffer;
 			tcs.transPortServer.receive (data, true);
-			if (data.length() == 10) {
-				data.position = 0;
-				tcs.transPortClient.dataBuffer = data.Clone() as ByteBuffer;
-				tcs.transPortClient.receive (data, true);
-			}
 		
 		} catch (Exception e) {
 			Log.Error (e.Message);
 		}
 		data.position = 0;
 		tcs.socketServer.Send (data.getArray ());
-		return false;
+		return true;
 	}
 
 	private static bool transToClientData (TransCenterSockets tcs)
 	{
-		Log.Info (tcs.socketServer.Available);
-		ports++;
+		Log.Info ( getSocketStr(tcs.socketServer)+ tcs.socketServer.Available);
 		ByteBuffer data = new ByteBuffer (tcs.socketServer.Available);
 		data.setTop (tcs.socketServer.Available);
 		tcs.socketServer.Receive (data.getArray (), SocketFlags.None);
-		tcs.transPortClient.isSend = false;
+	 
 		tcs.transPortClient.isServer = false;
 		try {
-			/*if (TransPort.messagePort!=0)
-			{
-				tcs.transPortClient.sendUser();
-				TransPort.messagePort=0;
-			}*/
+			 
 			CallBack cb = delegate {
 				data.position = 0;
 				tcs.socketClient.Send (data.getArray ());
 			};
-			    tcs.transPortClient.erlConnect.transCallBack = cb  ; 
+			    tcs.transPortClient.erlConnect.transCallBack = null  ; 
 				tcs.transPortClient.dataBuffer = data.Clone() as ByteBuffer;
 			    tcs.transPortClient.receive (data, false);
 			 
 				if (data.length() == 10) {
 					data.position = 0;
+				    tcs.transPortServer.isServer = true  ;
 					tcs.transPortServer.dataBuffer = data.Clone() as ByteBuffer;
-					tcs.transPortServer.receive (data, false);
+					tcs.transPortServer.receive (data, true);
 				}
 				 
 
@@ -203,8 +200,8 @@ public class TransCenter
 	{
 		private Socket _socketServer;
 		private Socket _socketClient;
-		private TransPort _transPortServer;
-		private TransPort _transPortClient;
+		private TransPortServer _transPortServer;
+		private TransPortClient _transPortClient;
 
 		public TransCenterSockets ()
 		{
@@ -215,7 +212,7 @@ public class TransCenter
 			set {
 				_socketServer = value;
 				ErlConnect erlConnect = ConnectManager.manager ().transBeginConnect (_socketServer) as ErlConnect;
-				TransPort transPort = new TransPort (erlConnect);
+				TransPortServer transPort = new TransPortServer (erlConnect);
 				transPortServer = transPort;
 			}  
 		}
@@ -225,17 +222,17 @@ public class TransCenter
 			set { 
 				_socketClient = value;
 				ErlConnect erlConnect = ConnectManager.manager ().transBeginConnect (_socketClient) as ErlConnect;
-				TransPort transPort = new TransPort (erlConnect);
+				TransPortClient transPort = new TransPortClient (erlConnect);
 				transPortClient = transPort;
 			}  
 		}
 
-		public TransPort transPortServer {  
+		public TransPortServer transPortServer {  
 			get { return _transPortServer; }  
 			set { _transPortServer = value; }  
 		}
 
-		public TransPort transPortClient {  
+		public TransPortClient transPortClient {  
 			get { return _transPortClient; }  
 			set { _transPortClient = value; }  
 		}

@@ -3,21 +3,18 @@ using System.Runtime.CompilerServices;
 using NLog;
 using System.Net.Sockets;
 
-public class TransPort : BaseFPort
+public class TransPortServer : BaseFPort
 {
 	//public readonly Logger Log = LogManager.GetLogger("ClientPort");
 	//private CallBack _callBack;
 	 
-	public bool isSend = false ;
-	public bool isServer = false ;
-	public bool sendFinish = false ;
 	public static int messagePort = 0;
 	public ByteBuffer dataBuffer{
 		get{ return this.erlConnect.dataBuffer;}
 		set{ this.erlConnect.dataBuffer = value;}
 	}
 
-	public TransPort (ErlConnect _erlConnect)
+	public TransPortServer (ErlConnect _erlConnect)
 	{
 		this.erlConnect = _erlConnect;
 		this.erlConnect.portHandler = this;
@@ -72,17 +69,24 @@ public class TransPort : BaseFPort
 		Log.Info(message.Cmd+"|"+ message.toJsonString());
 		//if (!isSend && this.erlConnect.transCallBack != null) {
 			//this.erlConnect.transCallBack.Invoke ();
-		if (!this.isServer) {
-			ByteBuffer bf = (ByteBuffer)this.erlConnect.dataBuffer.Clone ();
-			int pos = bf.position;
-			bf.position = 0; 
-			this.erlConnect.socket.Send (bf.getArray ());
+
+		int len = (int)this.dataBuffer.bytesAvailable;
+		int pos = this.dataBuffer.position;
+
+		byte[] tmp = new byte[len];
+		byte[] bak = new byte[pos];
+
+		this.dataBuffer.position = 0;
+		this.dataBuffer.readBytes (bak, 0, pos);
+		this.dataBuffer.readBytes (tmp, 0, len);
+		this.dataBuffer.clear ();
+		this.dataBuffer = new ByteBuffer (tmp);
+		//base.erlConnect.socket.Send (bak);
+
+		if (this.dataBuffer.bytesAvailable > 0) {
+			this.receive (null, this.isServer);
 		}
-		//this.erlConnect.dataBuffer.position = pos;
-
-
-		//}
-		isSend = false;
+		 
 
 	}
 	public override void erlReceive (Connect connect, ErlKVMessageClient message)

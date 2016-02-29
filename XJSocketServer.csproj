@@ -128,6 +128,8 @@
     <Compile Include="Script\TransCenter\TransPort.cs" />
     <Compile Include="Script\ByteKitClient.cs" />
     <Compile Include="Script\ErlKVMessageClient.cs" />
+    <Compile Include="Script\TransCenter\TransPortClient.cs" />
+    <Compile Include="Script\TransCenter\TransPortServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

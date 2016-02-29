@@ -110,7 +110,7 @@ public class ErlString : ErlType
         base.bytesRead(data);
         if (this.isTag(base._tag))
         {
-			data.position = data.position - 3;
+			//data.position = data.position - 3;
             uint num = (uint) data.readUnsignedShort();
             this._value = string.Empty;
             uint position = (uint) data.position;
