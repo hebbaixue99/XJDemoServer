@@ -115,8 +115,8 @@ public class TransPortServer : BaseFPort
 	public void readMessage (ErlKVMessage message)
 	{
 		string str = message.Cmd;
-		Log.Info (str);
-		Log.Info (message.toJsonString ());
+		//Log.Info (str);
+		//Log.Info (message.toJsonString ());
 		BaseFPort bf = null;
 		foreach (string key in BaseFPort.portDict.Keys) {
 			if (key.Contains (str)||str.Contains(key)) {

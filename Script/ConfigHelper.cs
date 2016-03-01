@@ -150,7 +150,7 @@ public static class ConfigHelper
 	}
 	public static void Main(string[] args)
 	{
-		 string get_storage_card = ConfigHelper.GetAppConfig("/yxzh/active_port/get_gm_active_all2");
+		string get_storage_card = ConfigHelper.GetAppConfig("/yxzh/affiche/get_active_notice");
 		//get_storage_card = "['(clist)']";
 		get_storage_card=get_storage_card.Replace("'","\"");
 		 

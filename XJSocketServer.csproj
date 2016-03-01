@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>XJSocketServer</RootNamespace>
     <AssemblyName>XJSocketServer</AssemblyName>
-    <StartupObject>TransCenter</StartupObject>
+    <StartupObject>SocketServerBase</StartupObject>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <CodePage>65001</CodePage>
@@ -130,6 +130,9 @@
     <Compile Include="Script\ErlKVMessageClient.cs" />
     <Compile Include="Script\TransCenter\TransPortClient.cs" />
     <Compile Include="Script\TransCenter\TransPortServer.cs" />
+    <Compile Include="Script\Ports\FrontPort.cs" />
+    <Compile Include="Script\SocketClient\ClientMain.cs" />
+    <Compile Include="Script\SocketClient\ClientSocketPort.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -160,6 +163,7 @@
     <Folder Include="Script\Client\" />
     <Folder Include="Script\Ports\" />
     <Folder Include="Script\TransCenter\" />
+    <Folder Include="Script\SocketClient\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Script\AnimationOrTween\.DS_Store" />

@@ -68,7 +68,12 @@ public class ClientPort : BaseFPort
 			case "/yxzh/expedition/get_base_info":	
 			case "/yxzh/opentask/get_opentasks":
 			case "/yxzh/title/get_title":
+			case "/yxzh/affiche/get_active_notice":
+				
 
+				//break;
+			default: 
+				//Log.Error (message.Cmd);
 				String strValue = ConfigHelper.GetAppConfig (message.Cmd);
 				ErlKVMessage dmsg = new ErlKVMessage ("r_ok");
 				dmsg.addValue (null, new ErlInt (message.getPort ()));
@@ -76,8 +81,6 @@ public class ClientPort : BaseFPort
 				ErlArray ea = new ErlArray (et); 	
 				dmsg.addValue ("msg", ea);
 				base.send (this.erlConnect, dmsg);
-				break;
-			default: 
 				break;
 			}
 		}
