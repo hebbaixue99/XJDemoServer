@@ -81,6 +81,8 @@ public class TransPortServer : BaseFPort
 		this.dataBuffer.readBytes (tmp, 0, len);
 		this.dataBuffer.clear ();
 		this.dataBuffer = new ByteBuffer (tmp);
+
+		Log.Debug ("ConnectCount.getInstance().number=" + ConnectCount.getInstance ().number);
 		//base.erlConnect.socket.Send (bak);
 
 		if (this.dataBuffer.bytesAvailable > 0) {

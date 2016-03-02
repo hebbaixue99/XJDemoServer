@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>XJSocketServer</RootNamespace>
     <AssemblyName>XJSocketServer</AssemblyName>
-    <StartupObject>SocketServerBase</StartupObject>
+    <StartupObject>TransCenter</StartupObject>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <CodePage>65001</CodePage>

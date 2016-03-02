@@ -10,29 +10,35 @@ public class TransCenter
 {
 	public static readonly Logger Log = NLog.LogManager.GetCurrentClassLogger ();
 	public static int transCenterPort = 7612;
+	public static string transCenterIP="0.0.0.0";
 	public static string targetIP = "123.59.34.161";
 	public static int targetPort = 7612;
 	public static Socket transCenterServerSocket;
 	public static int ports = 0 ;
+	public static bool proceMsg = true ;
 	public delegate int AddHandler();
 
 	public TransCenter ()
 	{
 	}
 
-	private void initConfig ()
+	private static void initConfig ()
 	{
-		transCenterPort = StringKit.toInt (ConfigHelper.GetAppConfig ("transCenterPort"));
-		targetIP = ConfigHelper.GetAppConfig ("targetIP");
-		targetPort = StringKit.toInt (ConfigHelper.GetAppConfig ("targetPort"));
+		Log.Debug("initConfig：" + DateTime.Now.ToString("HH:mm:ss"));
+		transCenterIP = (ConfigHelper.GetAppConfig ("transCenterIP","0.0.0.0"));
+		transCenterPort = StringKit.toInt (ConfigHelper.GetAppConfig ("transCenterPort","7612"));
+		targetIP = ConfigHelper.GetAppConfig ("targetIP","123.59.34.161");
+		targetPort = StringKit.toInt (ConfigHelper.GetAppConfig ("targetPort","7612"));
+		proceMsg = (ConfigHelper.GetAppConfig ("proceMsg","false")=="true");
+		Log.Info("initConfig[transCenterIP:{0},transCenterPort:{1},targetIP:{2},targetPort:{3},procMsg:{4}]",transCenterIP,transCenterPort,targetIP,targetPort,proceMsg);
 	}
 
 	public static void Main (string[] args)
 	{
 		Log.IsEnabled (LogLevel.Debug);
-
+		initConfig ();
 		//服务器IP地址  
-		IPAddress ip = IPAddress.Parse ("0.0.0.0");  
+		IPAddress ip = IPAddress.Parse (transCenterIP);  
 		transCenterServerSocket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);  
 		transCenterServerSocket.Bind (new IPEndPoint (ip, transCenterPort));  //绑定IP地址：端口  
 		transCenterServerSocket.Listen (10);    //设定最多10个排队连接请求  
@@ -73,7 +79,9 @@ public class TransCenter
 		};
 		tcs.socketServer = _socket;
 		tcs.socketServer.BeginConnect (_point, new AsyncCallback (callback), tcs.socketClient);
-
+		//启动处理线程
+		Thread proceMsgThread = new Thread (ProceMessage);  
+		proceMsgThread.Start (tcs);  
  
 
 		while (true) {  
@@ -93,6 +101,31 @@ public class TransCenter
 			}  
 		} 
 		 
+	}
+
+	/// <summary>  
+	/// 接收消息  
+	/// </summary>  
+	/// <param name="clientSocket"></param>  
+	private static void ProceMessage (object transCenterSockets)
+	{  
+		TransCenterSockets tcs = (TransCenterSockets)transCenterSockets;
+		while (true) {  
+			try {  
+				//通过clientSocket接收数据  
+
+				if (proceMsg) {
+					//clientPort.receive ();
+					//Log.Debug("proceMsg：" + DateTime.Now.ToString("hh24:mm:ss"));
+					 
+				} 
+				Thread.Sleep (1000);
+			} catch (Exception ex) {  
+				Log.Error (ex.Message);
+				break;  
+			}  
+		} 
+
 	}
 
 	/// <summary>  
@@ -198,6 +231,7 @@ public class TransCenter
 
 	public class TransCenterSockets
 	{
+		
 		private Socket _socketServer;
 		private Socket _socketClient;
 		private TransPortServer _transPortServer;

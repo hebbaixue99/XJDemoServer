@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class BaseFPort:PortHandler
 {
 	 
+	public static bool LoginFinished= false ;
 	private string _host="127.0.0.1";
 	private int _port=7612;
 	private ErlConnect _erlConnect;
