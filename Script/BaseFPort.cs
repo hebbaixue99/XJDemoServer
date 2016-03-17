@@ -31,10 +31,11 @@ public class BaseFPort:PortHandler
 		{ "active_port" , new ActivePort{} } ,
 		{ "/yxzh/title/get_title" , new TitlePort{} }
 	};
-	 
 
+	 
 	public BaseFPort()
 	{
+		
 	}
 	public BaseFPort(ErlConnect _socket)
 	{

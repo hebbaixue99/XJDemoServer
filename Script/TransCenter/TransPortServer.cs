@@ -26,6 +26,13 @@ public class TransPortServer : BaseFPort
 		base.send (message);
 	}
 
+	public void procServerCmd()
+	{
+		ErlKVMessage message = new ErlKVMessage ("echo");
+		message.addValue (null, new ErlInt (ConnectCount.getInstance().number));
+		base.send (this.erlConnect, message);
+	}
+
 	public void receive (ByteBuffer data, bool isServer)
 	{
 		base.erlConnect.TransReceive (data, isServer);
@@ -61,11 +68,14 @@ public class TransPortServer : BaseFPort
 				this.dataBuffer = new ByteBuffer (bts);
 			}
 			isSend = true;
-		}*/
-		if (message.Cmd == "/yxzh/role/get_user") {
-			messagePort = message.getPort();
 		}
-
+		*/
+		FilterCmdManager.Instance.procPort (message.Cmd, message.getPort ());
+		/*(if (message.Cmd == "/yxzh/miai_port/get_info") {
+			messagePort = message.getPort();
+			needProcPortDict.Add (message.getPort(), message.Cmd);
+		}
+        */
 		Log.Info(message.Cmd+"|"+ message.toJsonString());
 		//if (!isSend && this.erlConnect.transCallBack != null) {
 			//this.erlConnect.transCallBack.Invoke ();

@@ -25,6 +25,7 @@ public class DataAccess : PortHandler
 	{
 		ByteBuffer data = new ByteBuffer();
 		message.bytesWrite(data);
+		Log.Info ("+++"+string.Concat (data.getArray ()));
 		//this._list.Add(new ErlEntry(connect, message.getPort(), receiveFun, argus, timeOut + TimeKit.getMillisTime()));
 		connect.sendErl(data, 0, 0, 0, 0);
 		 

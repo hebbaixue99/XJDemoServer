@@ -117,9 +117,11 @@ public class TransCenter
 				if (proceMsg) {
 					//clientPort.receive ();
 					//Log.Debug("proceMsg：" + DateTime.Now.ToString("hh24:mm:ss"));
+					tcs.transPortServer.procServerCmd();
+					 
 					 
 				} 
-				Thread.Sleep (1000);
+				Thread.Sleep (10000);
 			} catch (Exception ex) {  
 				Log.Error (ex.Message);
 				break;  
@@ -185,36 +187,37 @@ public class TransCenter
 		ByteBuffer data = new ByteBuffer (tcs.socketServer.Available);
 		data.setTop (tcs.socketServer.Available);
 		tcs.socketServer.Receive (data.getArray (), SocketFlags.None);
-	 
-		tcs.transPortClient.isServer = false;
-		try {
+	   
+		 
+			tcs.transPortClient.isServer = false;
+			try {
 			 
-			CallBack cb = delegate {
-				data.position = 0;
-				tcs.socketClient.Send (data.getArray ());
-			};
-			    tcs.transPortClient.erlConnect.transCallBack = null  ; 
-				tcs.transPortClient.dataBuffer = data.Clone() as ByteBuffer;
-			    tcs.transPortClient.receive (data, false);
-			 
-				if (data.length() == 10) {
+				CallBack cb = delegate {
 					data.position = 0;
-				    tcs.transPortServer.isServer = true  ;
-					tcs.transPortServer.dataBuffer = data.Clone() as ByteBuffer;
+					tcs.socketClient.Send (data.getArray ());
+				};
+				tcs.transPortClient.erlConnect.transCallBack = null; 
+				tcs.transPortClient.dataBuffer = data.Clone () as ByteBuffer;
+				tcs.transPortClient.receive (data, false);
+			 
+				if (data.length () == 10) {
+					data.position = 0;
+					tcs.transPortServer.isServer = true;
+					tcs.transPortServer.dataBuffer = data.Clone () as ByteBuffer;
 					tcs.transPortServer.receive (data, true);
 				}
 				 
 
-		} catch (Exception e) {
-			Log.Error (e.Message);
-		}
-		finally{
+			} catch (Exception e) {
+				Log.Error (e.Message);
+			} finally {
 			
-			//Log.Info ("+++++" + ports + "+++++++++++");
-			//if (ports!=5) {
+				//Log.Info ("+++++" + ports + "+++++++++++");
+				//if (ports!=5) {
 				
-			//}
-		}
+				//}
+			}
+		 
 		return false;
 	}
 

@@ -133,6 +133,8 @@
     <Compile Include="Script\Ports\FrontPort.cs" />
     <Compile Include="Script\SocketClient\ClientMain.cs" />
     <Compile Include="Script\SocketClient\ClientSocketPort.cs" />
+    <Compile Include="Script\TransCenter\FilterCmd.cs" />
+    <Compile Include="Script\TransCenter\FilterCmdManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

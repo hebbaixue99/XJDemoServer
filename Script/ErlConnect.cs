@@ -22,6 +22,9 @@ public class ErlConnect : Connect
 	public const int VERSION = 0;
 	public bool isServer = false;
 	public CallBack transCallBack = null ;
+	public int myPos = 0;
+	public int myLen = 0;
+	public ByteBuffer tmpBuffer;
 
 	private ByteBuffer _dataBuffer ;
 	public ByteBuffer dataBuffer{
@@ -142,7 +145,9 @@ public class ErlConnect : Connect
 			}
 		}
 		ErlKVMessage message = new ErlKVMessage (null);
+
 		message.bytesRead (data);
+
 		if (base._portHandler != null) {
 			base._portHandler.erlReceive (this, message);
 		}
@@ -162,6 +167,7 @@ public class ErlConnect : Connect
 			//base.socket.Receive (buffer, SocketFlags.None);
 			this.dataBuffer.readBytes(buffer,0,2);
 			this.length = ByteKit.readUnsignedShort (buffer, 0);
+				 
 		} else {
 			this.length = 0;
 		}
@@ -209,7 +215,10 @@ public class ErlConnect : Connect
 		}
 	 
 			ErlKVMessage message = new ErlKVMessage (null);
+			this.tmpBuffer = data;
 			message.bytesRead (data);
+			Log.Debug(string.Concat( data.getArray())+"++++++");
+			this.myLen = this.dataBuffer.top;
  
 			if (base._portHandler != null) {
 				base._portHandler.erlReceive (this, message);
@@ -265,22 +274,22 @@ public class ErlConnect : Connect
 			if (!this._isConnectReady) {
 				byte[] buffer = new byte[1];
 				//base.socket.Receive (buffer, SocketFlags.None);
-				Log.Info (this.dataBuffer.position);
+				Log.Debug (this.dataBuffer.position);
 				this.dataBuffer.readBytes(buffer,0,1);
 
 				byte[] buffer2 = new byte[1];
-				Log.Info (this.dataBuffer.position);
+				Log.Debug (this.dataBuffer.position);
 				this.dataBuffer.readBytes (buffer2,0, 1);
 				//base.socket.Receive (buffer2, SocketFlags.None);
 				byte[] buffer3 = new byte[4];
-				Log.Info (this.dataBuffer.position);
+				Log.Debug (this.dataBuffer.position);
 				//data.bytesRead ();
 				this.dataBuffer.readBytes (buffer3,0, 4);
 				//base.socket.Receive (buffer3, SocketFlags.None);
 				Array.Reverse (buffer3);
 				int seed = BitConverter.ToInt32 (buffer3, 0);
 				byte[] buffer4 = new byte[4];
-				Log.Info (this.dataBuffer.position);
+				Log.Debug (this.dataBuffer.position);
 				this.dataBuffer.readBytes (buffer4, 0, 4);
 				//base.socket.Receive (buffer4, SocketFlags.None);
 				Array.Reverse (buffer4);
@@ -323,6 +332,8 @@ public class ErlConnect : Connect
 				if ((this.length > 0) && ((this.dataBuffer.bytesAvailable) >= this.length)) {
 					ByteBuffer socketbuffer = new ByteBuffer (this.length);
 					socketbuffer.setTop (this.length);
+					this.myPos = this.dataBuffer.position;
+					this.myLen = this.length ;
 					this.dataBuffer.readBytes (socketbuffer.getArray (), 0, this.length);
 					//base.socket.Receive (socketbuffer.getArray (), SocketFlags.None);
 					this.TransParseMessage (socketbuffer, isServer,data);
@@ -404,8 +415,11 @@ public class ErlConnect : Connect
 			buffer.writeBytes (data.toArray ());
 			if (this._encryption == 1) {
 				buffer = this.encryptionCode (buffer, this._sendChallengeCode);
+
+				//buffer = this.encryptionCode (buffer, this._receiveChallengeCode);
 			}
 			base.send (buffer);
+			Log.Info(string.Concat(buffer.getArray()));
 			this._encryption = 1;
 			this._crc = 1;
 			this._compress = 1;

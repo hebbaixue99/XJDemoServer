@@ -44,41 +44,36 @@ public class TransPortClient : BaseFPort
 	}
 	public override void erlReceive (Connect connect, ErlKVMessage message)
 	{
-		//this.readMessage (message);
-		//Log.Info ("+++++111111111---222222222" + this.isSend + "+++++++++++");
-		/*if (messagePort!=0&& messagePort == message.getPort()) {
-			String strValue = ConfigHelper.GetAppConfig ("/yxzh/role/get_user");
-			ErlKVMessage msg = new ErlKVMessage ("r_ok");
-			msg.addValue (null, new ErlInt (messagePort));
-			ErlType[] et = StringKit.strToErlTypeArray (strValue);
-			ErlArray ea = new ErlArray (et); 	
-			msg.addValue ("msg", ea);
-			base.send (this.erlConnect, msg);
-			if (this.erlConnect.dataBuffer.bytesAvailable > 0) {
-				byte[] bts = new byte[this.erlConnect.dataBuffer.bytesAvailable];
-				this.dataBuffer.readBytes (bts, 0, (int)this.erlConnect.dataBuffer.bytesAvailable);
-				this.erlConnect.socket.Send (bts);
-				this.dataBuffer = new ByteBuffer (bts);
-			}
-			isSend = true;
-		}*/
-		if (message.Cmd == "/yxzh/role/get_user") {
-			messagePort = message.getPort();
-		}
-
+		 
 		Log.Info(message.Cmd+"|"+ message.toJsonString());
 		int len = (int)this.dataBuffer.bytesAvailable;
 		int pos = this.dataBuffer.position;
 
 		byte[] tmp = new byte[len];
 		byte[] bak = new byte[pos];
+		byte[] mybak = new byte[this.erlConnect.myPos];
 
+		this.dataBuffer.position = 0;
+		Log.Debug (string.Concat(this.dataBuffer.getArray()));
+
+
+		this.dataBuffer.position = 0;
+		this.dataBuffer.readBytes (mybak, 0, this.erlConnect.myPos);
 		this.dataBuffer.position = 0;
 		this.dataBuffer.readBytes (bak, 0, pos);
 		this.dataBuffer.readBytes (tmp, 0, len);
 		this.dataBuffer.clear ();
 		this.dataBuffer = new ByteBuffer (tmp);
-		base.erlConnect.socket.Send (bak);
+
+		if (!FilterCmdManager.Instance.procCmd(message.getPort(),this)){
+			if (base.erlConnect.socket.Connected) {
+				base.erlConnect.socket.Send (bak);
+			} else {
+				Log.Info ("客户端已断开，不再回传");
+			}
+			//needProcPortDict.Remove (message.getPort ());
+		}  
+		 
 
 		if (this.dataBuffer.bytesAvailable > 0) {
 			this.receive (null, this.isServer);
