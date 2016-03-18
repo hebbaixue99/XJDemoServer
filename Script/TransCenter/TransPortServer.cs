@@ -23,14 +23,16 @@ public class TransPortServer : BaseFPort
 	public void closeContect ()
 	{
 		ErlKVMessage message = new ErlKVMessage ("/yxzh/close");
-		base.send (message);
+		base.access (message);
+		//base.send (message);
 	}
 
 	public void procServerCmd()
 	{
 		ErlKVMessage message = new ErlKVMessage ("echo");
 		message.addValue (null, new ErlInt (ConnectCount.getInstance().number));
-		base.send (this.erlConnect, message);
+		//base.send (this.erlConnect, message);
+		base.access (message);
 	}
 
 	public void receive (ByteBuffer data, bool isServer)

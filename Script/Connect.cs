@@ -206,7 +206,7 @@ public class Connect : IDisposable
             this._active = true;
             this.socket.ReceiveBufferSize = 0x5000;
             this._activeTime = this._startTime = DateTime.Now.ToFileTime();
-            this.timer.stop();
+            //this.timer.stop();
         }
     }
 

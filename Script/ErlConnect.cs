@@ -414,7 +414,11 @@ public class ErlConnect : Connect
 			}
 			buffer.writeBytes (data.toArray ());
 			if (this._encryption == 1) {
-				buffer = this.encryptionCode (buffer, this._sendChallengeCode);
+				if (!this.isServer) {
+					buffer = this.encryptionCode (buffer, this._receiveChallengeCode);
+				} else {
+					buffer = this.encryptionCode (buffer, this._sendChallengeCode);
+				}
 
 				//buffer = this.encryptionCode (buffer, this._receiveChallengeCode);
 			}

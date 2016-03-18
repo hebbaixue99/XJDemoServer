@@ -41,6 +41,7 @@ public class TransCenter
 		IPAddress ip = IPAddress.Parse (transCenterIP);  
 		transCenterServerSocket = new Socket (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);  
 		transCenterServerSocket.Bind (new IPEndPoint (ip, transCenterPort));  //绑定IP地址：端口  
+		transCenterServerSocket.ReceiveTimeout = 5000 ;
 		transCenterServerSocket.Listen (10);    //设定最多10个排队连接请求  
 		Log.Info ("启动监听{0}成功", transCenterServerSocket.LocalEndPoint.ToString ());  
 		//通过Clientsoket发送数据  
@@ -102,7 +103,29 @@ public class TransCenter
 		} 
 		 
 	}
+	public static bool SocketTest(object transCenterSockets)
+	{
+		TransCenterSockets tcs = (TransCenterSockets)transCenterSockets;
+		try{
+			 
+			tcs.transPortClient.erlConnect.socket.Send(new byte[0]);
 
+			Socket s = tcs.transPortClient.erlConnect.socket; 
+			if (s.Poll(-1, SelectMode.SelectRead))
+			{
+				 ;
+				int nRead = s.Available ;
+				if (nRead == 0)
+				{
+					return true ;
+				}
+			}      
+			return false  ;
+		}catch(Exception e) {
+			Log.Error (e.Message);
+			return false;
+		}
+	}
 	/// <summary>  
 	/// 接收消息  
 	/// </summary>  
@@ -117,7 +140,11 @@ public class TransCenter
 				if (proceMsg) {
 					//clientPort.receive ();
 					//Log.Debug("proceMsg：" + DateTime.Now.ToString("hh24:mm:ss"));
-					tcs.transPortServer.procServerCmd();
+					 
+					if (!SocketTest(tcs)) { 
+						tcs.transPortServer.isServer = true;
+					    tcs.transPortServer.procServerCmd();
+					}
 					 
 					 
 				} 
@@ -142,6 +169,7 @@ public class TransCenter
 				//通过clientSocket接收数据  
 				if (tcs.socketServer.Available > 0) {
 					//clientPort.receive ();
+
 					transToClientData (tcs);
 				} 
 				Thread.Sleep (2);
