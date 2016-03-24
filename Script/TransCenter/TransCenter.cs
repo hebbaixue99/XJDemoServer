@@ -113,7 +113,7 @@ public class TransCenter
 			Socket s = tcs.transPortClient.erlConnect.socket; 
 			if (s.Poll(-1, SelectMode.SelectRead))
 			{
-				 ;
+				
 				int nRead = s.Available ;
 				if (nRead == 0)
 				{
@@ -141,10 +141,10 @@ public class TransCenter
 					//clientPort.receive ();
 					//Log.Debug("proceMsg：" + DateTime.Now.ToString("hh24:mm:ss"));
 					 
-					if (!SocketTest(tcs)) { 
+					//if (!SocketTest(tcs)) { 
 						tcs.transPortServer.isServer = true;
 					    tcs.transPortServer.procServerCmd();
-					}
+					//}
 					 
 					 
 				} 

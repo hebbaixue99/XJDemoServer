@@ -29,10 +29,14 @@ public class TransPortServer : BaseFPort
 
 	public void procServerCmd()
 	{
-		ErlKVMessage message = new ErlKVMessage ("echo");
-		message.addValue (null, new ErlInt (ConnectCount.getInstance().number));
-		//base.send (this.erlConnect, message);
-		base.access (message);
+		if (this.erlConnect.ActiveTime >0 && TimeKit.getMillisTime () - this.erlConnect.ActiveTime >= 10000) {
+			ErlKVMessage message = new ErlKVMessage ("echo");
+			message.addValue (null, new ErlInt (ConnectCount.getInstance ().number));
+			base.sendServer (this.erlConnect, message);
+			//base.access (message);
+		}else if (this.erlConnect.ActiveTime >0 && TimeKit.getMillisTime () - this.erlConnect.ActiveTime >= 1000){
+			
+		}
 	}
 
 	public void receive (ByteBuffer data, bool isServer)

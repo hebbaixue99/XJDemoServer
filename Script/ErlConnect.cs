@@ -25,6 +25,8 @@ public class ErlConnect : Connect
 	public int myPos = 0;
 	public int myLen = 0;
 	public ByteBuffer tmpBuffer;
+	public long lastSendTime = 0 ;
+	public long lastRecvTime = 0;
 
 	private ByteBuffer _dataBuffer ;
 	public ByteBuffer dataBuffer{
@@ -416,20 +418,35 @@ public class ErlConnect : Connect
 			if (this._encryption == 1) {
 				if (!this.isServer) {
 					buffer = this.encryptionCode (buffer, this._receiveChallengeCode);
+					/*string code = "";
+					foreach(int sc in this._receiveChallengeCode)
+					{
+						code = code + sc ;
+					}
+					//Log.Info("---this._receiveChallengeCode="+ code);
+					 */
 				} else {
 					buffer = this.encryptionCode (buffer, this._sendChallengeCode);
+					/*string code = "";
+					foreach(int sc in this._sendChallengeCode)
+					{
+						code = code + sc ;
+					}
+					Log.Info("---this._sendChallengeCode="+ code);
+					 */
 				}
 
 				//buffer = this.encryptionCode (buffer, this._receiveChallengeCode);
 			}
 			base.send (buffer);
-			Log.Info(string.Concat(buffer.getArray()));
+			//Log.Info(string.Concat(buffer.getArray()));
 			this._encryption = 1;
 			this._crc = 1;
 			this._compress = 1;
 			this._kv = 1;
 		}
 	}
+	 
 
 	protected byte[] toPK (int[] pks)
 	{

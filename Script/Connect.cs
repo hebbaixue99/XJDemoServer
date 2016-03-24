@@ -188,8 +188,9 @@ public class Connect : IDisposable
             {
                 this.socket.Send(data, 0, data.Length, SocketFlags.None);
             }
-            catch
+			catch(Exception e)
             {
+				Log.Error (e.Message);
                /* if (GameManager.Instance != null)
                 {
                     GameManager.Instance.OnLostConnect(true);

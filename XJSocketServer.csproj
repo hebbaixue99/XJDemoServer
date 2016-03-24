@@ -135,6 +135,10 @@
     <Compile Include="Script\SocketClient\ClientSocketPort.cs" />
     <Compile Include="Script\TransCenter\FilterCmd.cs" />
     <Compile Include="Script\TransCenter\FilterCmdManager.cs" />
+    <Compile Include="Script\TransCenter\AutoCmd.cs" />
+    <Compile Include="Script\TransCenter\AutoCmdManager.cs" />
+    <Compile Include="Script\TransCenter\FPortManager.cs" />
+    <Compile Include="Script\DomainAccess.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -1,21 +1,23 @@
 ﻿using System;
 
-public class FilterCmd
+public class AutoCmd
 {
 	public String _cmd="";
 	public int _count=0;
 	public int _beginCount=1;
 	public BaseFPort _fport=null ;
+	public String _beginTime="00:00:00" ;
+	public String _endTime = "23:59:59" ;
 
-	public FilterCmd ()
+	public AutoCmd ()
 	{
 	}
-	public FilterCmd (string cmd,int beginCount)
+	public AutoCmd (string cmd,int beginCount)
 	{
 		this._cmd = cmd;
 		this._beginCount = beginCount;
 	}
-	public FilterCmd (string cmd,int beginCount,BaseFPort fport)
+	public AutoCmd (string cmd,int beginCount,BaseFPort fport)
 	{
 		this._cmd = cmd;
 		this._beginCount = beginCount;

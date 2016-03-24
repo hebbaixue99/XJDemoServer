@@ -72,6 +72,11 @@ public class BaseFPort:PortHandler
 	{
 		DataAccess.getInstance().send(connect, message, null, null, 0x4e20L);
 	}
+	public void sendServer (ErlConnect connect , ErlKVMessage message)
+	{
+		DataAccess.getInstance().sendServer(connect, message, null, null, 0x4e20L);
+	}
+	 
 	public void send(ErlKVMessage message )
 	{
 		ConnectManager.manager().sendMessage(this._host, this._port, message, null, null);

@@ -25,10 +25,20 @@ public class DataAccess : PortHandler
 	{
 		ByteBuffer data = new ByteBuffer();
 		message.bytesWrite(data);
-		Log.Info ("+++"+string.Concat (data.getArray ()));
+		//Log.Info ("+++"+string.Concat (data.getArray ()));
 		//this._list.Add(new ErlEntry(connect, message.getPort(), receiveFun, argus, timeOut + TimeKit.getMillisTime()));
 		connect.sendErl(data, 0, 0, 0, 0);
 		 
+	}
+
+	public void sendServer(ErlConnect connect, ErlKVMessage message, ReceiveFun receiveFun, List<object> argus, long timeOut)
+	{
+		ByteBuffer data = new ByteBuffer();
+		message.bytesWrite(data);
+		//Log.Info ("+++"+string.Concat (data.getArray ()));
+		//this._list.Add(new ErlEntry(connect, message.getPort(), receiveFun, argus, timeOut + TimeKit.getMillisTime()));
+		connect.sendErl(data, 1, 1, 1, 1);
+
 	}
 
     public void clearDataAccess()
